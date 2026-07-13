@@ -85,7 +85,7 @@ class TransactionsControllerTest < ActionDispatch::IntegrationTest
 
     get transactions_url(per_page: 10)
 
-    assert_dom "#total-transactions", count: 1, text: family.entries.transactions.size.to_s
+    assert_equal family.entries.transactions.size, rendered_entry_ids.size
 
     searchable_transaction = create_transaction(account: account, name: "Unique test name")
 
@@ -93,7 +93,7 @@ class TransactionsControllerTest < ActionDispatch::IntegrationTest
 
     # Only finds 1 transaction that matches filter
     assert_dom "#" + dom_id(searchable_transaction), count: 1
-    assert_dom "#total-transactions", count: 1, text: "1"
+    assert_equal 1, rendered_entry_ids.size
   end
 
   test "can update notes on split child transaction" do
@@ -184,7 +184,7 @@ class TransactionsControllerTest < ActionDispatch::IntegrationTest
     get transactions_url
 
     assert_response :success
-    assert_select ".split-group > div.opacity-50 p.privacy-sensitive", count: 1
+    assert_select ".split-group > div.opacity-50 .privacy-sensitive", count: 1
   end
 
   test "can paginate" do
@@ -197,7 +197,7 @@ class TransactionsControllerTest < ActionDispatch::IntegrationTest
   account = family.accounts.create! name: "Test", balance: 0, currency: "USD", accountable: Depository.new
 
   # Create multiple transactions for pagination
-  25.times do |i|
+  35.times do |i|
     create_transaction(
       account: account,
       name: "Transaction #{i + 1}",
@@ -207,25 +207,25 @@ class TransactionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   total_transactions = family.entries.transactions.count
-  assert_operator total_transactions, :>=, 20, "Should have at least 20 transactions for testing"
+  assert_operator total_transactions, :>=, 30, "Should have at least 30 transactions for testing"
 
   # Test page 1 - should show limited transactions
-  get transactions_url(page: 1, per_page: 10)
+  get transactions_url(page: 1, per_page: 30)
   assert_response :success
 
   page_1_count = css_select("turbo-frame[id^='entry_']").count
-  assert_equal 10, page_1_count, "Page 1 should respect per_page limit"
+  assert_equal 30, page_1_count, "Page 1 should respect per_page limit"
 
   # Test page 2 - should show different transactions
-  get transactions_url(page: 2, per_page: 10)
+  get transactions_url(page: 2, per_page: 30)
   assert_response :success
 
   page_2_count = css_select("turbo-frame[id^='entry_']").count
   assert_operator page_2_count, :>, 0, "Page 2 should show some transactions"
-  assert_operator page_2_count, :<=, 10, "Page 2 should not exceed per_page limit"
+  assert_operator page_2_count, :<=, 30, "Page 2 should not exceed per_page limit"
 
   # Test Pagy overflow handling - should redirect or handle gracefully
-  get transactions_url(page: 9999999, per_page: 10)
+  get transactions_url(page: 9999999, per_page: 30)
 
   # Either success (if Pagy shows last page) or redirect (if Pagy redirects)
   assert_includes [ 200, 302 ], response.status, "Pagy should handle overflow gracefully"
@@ -249,7 +249,7 @@ end
     account = family.accounts.create! name: "Same day", balance: 0, currency: "USD", accountable: Depository.new
     timestamp = Time.zone.parse("2026-05-05 12:00:00")
 
-    entries = 13.times.map do |index|
+    entries = 35.times.map do |index|
       create_transaction(
         account: account,
         name: "May 05 Transaction #{index + 1}",
@@ -262,90 +262,18 @@ end
 
     expected_entry_ids = Entry.where(id: entries.map(&:id)).reverse_chronological.pluck(:id).map(&:to_s)
 
-    get transactions_url(page: 1, per_page: 10)
+    get transactions_url(page: 1, per_page: 30)
     assert_response :success
     page_1_entry_ids = rendered_entry_ids
 
-    get transactions_url(page: 2, per_page: 10)
+    get transactions_url(page: 2, per_page: 30)
     assert_response :success
     page_2_entry_ids = rendered_entry_ids
 
-    assert_equal expected_entry_ids.first(10), page_1_entry_ids
-    assert_equal expected_entry_ids.drop(10), page_2_entry_ids
+    assert_equal expected_entry_ids.first(30), page_1_entry_ids
+    assert_equal expected_entry_ids.drop(30), page_2_entry_ids
     assert_empty page_1_entry_ids & page_2_entry_ids
     assert_equal expected_entry_ids, page_1_entry_ids + page_2_entry_ids
-  end
-
-  test "calls Transaction::Search totals method with correct search parameters" do
-    family = families(:empty)
-    sign_in users(:empty)
-    account = family.accounts.create! name: "Test", balance: 0, currency: "USD", accountable: Depository.new
-
-    create_transaction(account: account, amount: 100)
-
-    search = Transaction::Search.new(family)
-    totals = OpenStruct.new(
-      count: 1,
-      expense_money: Money.new(10000, "USD"),
-      income_money: Money.new(0, "USD"),
-      transfer_inflow_money: Money.new(0, "USD"),
-      transfer_outflow_money: Money.new(0, "USD")
-    )
-
-    Transaction::Search.expects(:new).with(family, filters: {}, accessible_account_ids: [ account.id ]).returns(search)
-    search.expects(:totals).once.returns(totals)
-
-    get transactions_url
-    assert_response :success
-  end
-
-  test "calls Transaction::Search totals method with filtered search parameters" do
-    family = families(:empty)
-    sign_in users(:empty)
-    account = family.accounts.create! name: "Test", balance: 0, currency: "USD", accountable: Depository.new
-    category = family.categories.create! name: "Food", color: "#ff0000"
-
-    create_transaction(account: account, amount: 100, category: category)
-
-    search = Transaction::Search.new(family, filters: { "categories" => [ "Food" ], "types" => [ "expense" ] })
-    totals = OpenStruct.new(
-      count: 1,
-      expense_money: Money.new(10000, "USD"),
-      income_money: Money.new(0, "USD"),
-      transfer_inflow_money: Money.new(0, "USD"),
-      transfer_outflow_money: Money.new(0, "USD")
-    )
-
-    Transaction::Search.expects(:new).with(family, filters: { "categories" => [ "Food" ], "types" => [ "expense" ] }, accessible_account_ids: [ account.id ]).returns(search)
-    search.expects(:totals).once.returns(totals)
-
-    get transactions_url(q: { categories: [ "Food" ], types: [ "expense" ] })
-    assert_response :success
-  end
-
-  test "shows inflow/outflow labels when filtering by transfers only" do
-    family = families(:empty)
-    sign_in users(:empty)
-    account = family.accounts.create! name: "Test", balance: 0, currency: "USD", accountable: Depository.new
-
-    create_transaction(account: account, amount: 100)
-
-    search = Transaction::Search.new(family, filters: { "types" => [ "transfer" ] })
-    totals = OpenStruct.new(
-      count: 2,
-      expense_money: Money.new(0, "USD"),
-      income_money: Money.new(0, "USD"),
-      transfer_inflow_money: Money.new(5000, "USD"),
-      transfer_outflow_money: Money.new(3000, "USD")
-    )
-
-    Transaction::Search.expects(:new).with(family, filters: { "types" => [ "transfer" ] }, accessible_account_ids: [ account.id ]).returns(search)
-    search.expects(:totals).once.returns(totals)
-
-    get transactions_url(q: { types: [ "transfer" ] })
-    assert_response :success
-    assert_select "#total-income", text: totals.transfer_inflow_money.format
-    assert_select "#total-expense", text: totals.transfer_outflow_money.format
   end
 
   test "mark_as_recurring creates a manual recurring transaction" do

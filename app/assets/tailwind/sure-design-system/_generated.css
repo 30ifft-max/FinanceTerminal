@@ -354,7 +354,7 @@
   @apply border-alpha-black-200;
 
   @variant theme-dark {
-    @apply border-alpha-white-400;
+    border-color: #333333;
   }
 }
 

@@ -1,0 +1,126 @@
+/*
+ * Scoped dark-theme repaint for the Transactions page only.
+ *
+ * Mirrors FFT's flat "Monarch Money" dark palette, but confined to elements
+ * inside `.txn-dark-scope` (the transactions#index root container) instead
+ * of touching the app-wide dark tokens in `_generated.css`. Remove this file
+ * (and the `.txn-dark-scope` class on the transactions page) to revert, or
+ * promote these values into `_generated.css` directly if this ever becomes
+ * the global dark theme.
+ */
+
+[data-theme="dark"] .txn-dark-scope {
+  --color-success: #10A861;
+  --color-warning: #E8562B;
+  --color-destructive: #E05252;
+  --color-destructive-subtle: #3D2020;
+  --color-shadow: transparent;
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-xl: none;
+  --color-focus-ring: #555555;
+  --color-tertiary: #2C2C2C;
+  --color-surface-hover: #1E1E1E;
+  --color-surface-inset: #1E1E1E;
+  --color-surface-inset-hover: #222222;
+  --color-container: #222222;
+  --color-container-hover: #2C2C2C;
+  --color-container-inset: #2C2C2C;
+  --color-container-inset-hover: #333333;
+  --color-toggle-track: #333333;
+  --budget-unused-fill: #333333;
+  --budget-unallocated-fill: #2C2C2C;
+
+  /*
+   * These utility classes no longer reference the custom properties above in
+   * FFT's version (hardcoded literals instead), so redefining the variables
+   * alone would not repaint them — each needs an explicit override here.
+   */
+  &.bg-overlay,
+  & .bg-overlay {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+
+  & .text-secondary {
+    color: #9B9B9B;
+  }
+
+  & .text-subdued {
+    color: #555555;
+  }
+
+  & .shadow-border-xs,
+  & .shadow-border-sm,
+  & .shadow-border-md,
+  & .shadow-border-lg,
+  & .shadow-border-xl {
+    box-shadow: 0px 0px 0px 1px #333333;
+  }
+
+  & .border-primary {
+    border-color: #333333;
+  }
+
+  & .border-subdued {
+    border-color: #2C2C2C;
+  }
+
+  & .button-bg-primary {
+    background-color: #10A861;
+  }
+
+  & .button-bg-primary-hover {
+    background-color: #0D8F52;
+  }
+
+  & .button-bg-secondary {
+    background-color: #2C2C2C;
+  }
+
+  & .button-bg-secondary-hover {
+    background-color: #333333;
+  }
+
+  & .button-bg-secondary-strong {
+    background-color: #E8562B;
+  }
+
+  & .button-bg-secondary-strong-hover {
+    background-color: #D04A22;
+  }
+
+  & .button-bg-disabled {
+    background-color: #2C2C2C;
+  }
+
+  & .button-bg-destructive {
+    background-color: #E05252;
+  }
+
+  & .button-bg-destructive-hover {
+    background-color: #C84545;
+  }
+
+  /* FFT also drops the `text-inverse` pairing here, not just the color. */
+  & .button-bg-ghost-hover {
+    background-color: #2C2C2C;
+  }
+
+  & .button-bg-outline-hover {
+    background-color: #2C2C2C;
+  }
+
+  & .tab-item-active {
+    background-color: #2C2C2C;
+  }
+
+  & .tab-item-hover {
+    background-color: #222222;
+  }
+
+  & .tab-bg-group {
+    background-color: #171717;
+  }
+}

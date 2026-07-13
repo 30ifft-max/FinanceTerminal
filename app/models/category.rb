@@ -28,6 +28,11 @@ class Category < ApplicationRecord
       .order(:name)
   }
   scope :roots, -> { where(parent_id: nil) }
+  # Categories a transaction can actually be tagged with. A category that has
+  # subcategories (a parent category acting as a group) is a placeholder for
+  # organizing its children — only leaf categories (no children) are
+  # assignable.
+  scope :assignable, -> { where.not(id: select(:parent_id).where.not(parent_id: nil)) }
   # Legacy scopes - classification removed; these now return all categories
   scope :incomes, -> { all }
   scope :expenses, -> { all }

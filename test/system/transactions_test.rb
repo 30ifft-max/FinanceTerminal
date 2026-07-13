@@ -140,7 +140,11 @@ class TransactionsTest < ApplicationSystemTestCase
     assert_text @transaction.name
   end
 
+  # Bulk-select checkboxes and the selection bar are currently hidden from the
+  # transactions page UI (backend/Stimulus controllers left intact for a future
+  # reactivation), so these UI-driven selection tests are skipped for now.
   test "can select and deselect entire page of transactions" do
+    skip "Bulk-select UI is hidden on the transactions page"
     all_transactions_checkbox.check
     assert_selection_count(number_of_transactions_on_page)
     all_transactions_checkbox.uncheck
@@ -148,6 +152,7 @@ class TransactionsTest < ApplicationSystemTestCase
   end
 
   test "can select and deselect groups of transactions" do
+    skip "Bulk-select UI is hidden on the transactions page"
     date_transactions_checkbox(1.day.ago.to_date).check
     assert_selection_count(2)
 
@@ -156,6 +161,7 @@ class TransactionsTest < ApplicationSystemTestCase
   end
 
   test "can select and deselect individual transactions" do
+    skip "Bulk-select UI is hidden on the transactions page"
     transaction_checkbox(@transactions.first).check
     assert_selection_count(1)
     transaction_checkbox(@transactions.second).check
@@ -165,6 +171,7 @@ class TransactionsTest < ApplicationSystemTestCase
   end
 
   test "outermost group always overrides inner selections" do
+    skip "Bulk-select UI is hidden on the transactions page"
     transaction_checkbox(@transactions.first).check
     assert_selection_count(1)
 

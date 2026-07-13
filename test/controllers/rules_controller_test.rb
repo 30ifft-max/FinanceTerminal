@@ -226,8 +226,22 @@ class RulesControllerTest < ActionDispatch::IntegrationTest
     get rules_url
 
     assert_response :success
-    assert_select "th", text: /Queued\s+Processed\s+Modified\s+Blocked/
-    assert_select "td", text: "10 / 7 / 4 / 3"
+    assert_select "th", text: "Queued"
+    assert_select "th", text: "Processed"
+    assert_select "th", text: "Modified"
+    assert_select "th", text: "Blocked"
+    assert_select "td", text: "10"
+    assert_select "td", text: "7"
+    assert_select "td", text: "4"
+    assert_select "td", text: "3"
+  end
+
+  test "index renders embedded fragment without settings layout when loaded as the transactions rules tab" do
+    get rules_url, headers: { "Turbo-Frame" => "rules_tab_panel" }
+
+    assert_response :success
+    assert_select "turbo-frame#rules_tab_panel"
+    assert_select "#settings-nav-container", count: 0
   end
 
   test "should get confirm_all" do

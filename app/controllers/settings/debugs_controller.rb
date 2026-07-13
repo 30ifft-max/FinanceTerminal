@@ -28,7 +28,7 @@ class Settings::DebugsController < Admin::BaseController
     scope = scope.where("created_at >= ?", @start_date.beginning_of_day) if @start_date.present?
     scope = scope.where("created_at < ?", @end_date.next_day.beginning_of_day) if @end_date.present?
 
-    @pagy, @debug_log_entries = pagy(scope, limit: safe_per_page(50))
+    @pagy, @debug_log_entries = pagy(scope, limit: safe_per_page(default: 50))
     @categories = DebugLogEntry.distinct.order(:category).pluck(:category)
     @levels = DebugLogEntry::LEVELS
     @sources = DebugLogEntry.distinct.order(:source).pluck(:source)

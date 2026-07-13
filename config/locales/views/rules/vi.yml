@@ -30,7 +30,6 @@ vi:
       page_title: Quy tắc
       delete_all_rules: Xóa tất cả quy tắc
       new_rule: Quy tắc mới
-      ai_cost_warning: Các hành động quy tắc sử dụng AI sẽ tốn chi phí. Hãy lọc càng hẹp càng tốt để tránh chi phí không cần thiết.
       rules_heading: Quy tắc
       sort_by: "Sắp xếp theo:"
       sort_name: Tên

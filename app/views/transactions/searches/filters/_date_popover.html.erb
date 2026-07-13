@@ -1,0 +1,67 @@
+<%# locals: (form:) %>
+<div class="flex flex-col w-[420px]">
+  <%= form.hidden_field :date_preset_label, value: @q[:date_preset_label], data: { date_range_preset_target: "presetLabel" } %>
+  <div class="flex border-b border-secondary">
+    <%# Left: preset buttons %>
+    <div class="w-36 shrink-0 border-r border-secondary p-3 space-y-1">
+      <p class="text-xs font-semibold text-secondary mb-2"><%= t("transactions.searches.filters.date_filter.range_title", default: "日期范围") %></p>
+      <% [
+        [ t("transactions.searches.filters.date_filter.preset_7d",  default: "过去7天"),  "过去7天",  7,  "days"       ],
+        [ t("transactions.searches.filters.date_filter.preset_14d", default: "过去14天"), "过去14天", 14, "days"       ],
+        [ t("transactions.searches.filters.date_filter.preset_30d", default: "过去30天"), "过去30天", 30, "days"       ],
+        [ t("transactions.searches.filters.date_filter.preset_this_month", default: "本月"), "本月", 0, "this_month" ],
+        [ t("transactions.searches.filters.date_filter.preset_last_month", default: "上月"), "上月", 0, "last_month" ],
+        [ t("transactions.searches.filters.date_filter.preset_this_year",  default: "今年"), "今年", 0, "this_year"  ],
+        [ t("transactions.searches.filters.date_filter.preset_last_year",  default: "去年"), "去年", 0, "last_year"  ],
+      ].each do |label, preset_label, amount, kind| %>
+        <button type="button"
+          class="block w-full text-left px-2 py-1.5 text-sm rounded-md text-secondary hover:text-primary hover:bg-container-inset-hover transition-colors"
+          data-action="date-range-preset#apply"
+          data-date-range-preset-amount-param="<%= amount %>"
+          data-date-range-preset-kind-param="<%= kind %>"
+          data-date-range-preset-label-param="<%= preset_label %>">
+          <%= label %>
+        </button>
+      <% end %>
+    </div>
+
+    <%# Right: precise date inputs %>
+    <div class="grow p-3 space-y-3">
+      <div>
+        <div class="flex items-center justify-between mb-1">
+          <label class="text-xs font-medium text-secondary"><%= t("transactions.searches.filters.date_filter.start_date") %></label>
+          <button type="button" class="text-xs text-link hover:underline" data-action="date-range-preset#clearStart">
+            <%= t("transactions.searches.filters.date_filter.clear", default: "清除") %>
+          </button>
+        </div>
+        <%= form.date_field :start_date,
+                            value: @q[:start_date],
+                            data: { date_range_preset_target: "startDate", action: "change->date-range-preset#updateLabel" },
+                            class: "block w-full border border-secondary rounded-lg bg-container-inset py-2.5 px-3 text-sm text-primary focus-visible:ring-2 focus-visible:ring-alpha-black-300" %>
+      </div>
+      <div>
+        <div class="flex items-center justify-between mb-1">
+          <label class="text-xs font-medium text-secondary"><%= t("transactions.searches.filters.date_filter.end_date") %></label>
+          <button type="button" class="text-xs text-link hover:underline" data-action="date-range-preset#clearEnd">
+            <%= t("transactions.searches.filters.date_filter.clear", default: "清除") %>
+          </button>
+        </div>
+        <%= form.date_field :end_date,
+                            value: @q[:end_date],
+                            data: { date_range_preset_target: "endDate", action: "change->date-range-preset#updateLabel" },
+                            class: "block w-full border border-secondary rounded-lg bg-container-inset py-2.5 px-3 text-sm text-primary focus-visible:ring-2 focus-visible:ring-alpha-black-300" %>
+      </div>
+    </div>
+  </div>
+
+  <%# Bottom bar %>
+  <div class="flex justify-between items-center gap-2 p-3">
+    <button type="button" class="text-sm text-secondary hover:text-primary" data-action="date-range-preset#clearAll">
+      <%= t("transactions.searches.filters.date_filter.clear_all", default: "清除") %>
+    </button>
+    <div class="flex items-center gap-2">
+      <%= render DS::Button.new(text: t("transactions.searches.menu.cancel"), type: "button", variant: "ghost", size: :sm, data: { action: "DS--popover#close" }) %>
+      <%= render DS::Button.new(text: t("transactions.searches.menu.apply"), type: :submit, size: :sm) %>
+    </div>
+  </div>
+</div>

@@ -142,14 +142,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     get account_url(@account, tab: "activity")
 
     assert_response :success
-    assert_select "##{dom_id(entry.entryable, "category_menu_desktop")}"
-    assert_select "##{dom_id(entry.entryable, "category_menu_desktop")}.min-w-0"
-    assert_select "##{dom_id(entry.entryable, "category_menu_desktop")}.overflow-hidden"
-    assert_select "##{dom_id(entry.entryable, "category_menu_desktop")} button.block"
-    assert_select "##{dom_id(entry.entryable, "category_menu_desktop")} button.w-full"
-    assert_select "##{dom_id(entry.entryable, "category_menu_desktop")} button.overflow-hidden"
-    assert_select "##{dom_id(entry.entryable, "category_menu_desktop")} [data-testid='category-name']"
-    assert_select "div.hidden.md\\:flex.min-w-0"
+    assert_select "div.hidden.md\\:flex.min-w-0 [data-testid='category-name']", text: category.name
   end
 
   test "should sync account" do

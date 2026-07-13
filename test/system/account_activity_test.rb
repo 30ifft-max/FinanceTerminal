@@ -26,7 +26,12 @@ class AccountActivityTest < ApplicationSystemTestCase
     )
   end
 
+  # The per-row selection checkbox and selection bar are currently removed
+  # from the shared transactions/_transaction partial (backend/Stimulus
+  # controllers left intact for a future reactivation), so these tests are
+  # skipped for now.
   test "account activity shows duplicate action for a selected transaction" do
+    skip "Bulk-select UI is hidden on the transactions row partial"
     visit account_url(@account, tab: "activity")
 
     find("#" + dom_id(@transaction_entry, "selection")).check
@@ -37,6 +42,7 @@ class AccountActivityTest < ApplicationSystemTestCase
   end
 
   test "account activity hides duplicate action for a selected valuation" do
+    skip "Bulk-select UI is hidden on the transactions row partial"
     visit account_url(@account, tab: "activity")
 
     find("#" + dom_id(@valuation_entry, "selection")).check

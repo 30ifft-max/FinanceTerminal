@@ -4,7 +4,10 @@
     <div class="flex items-center gap-2">
       <%= icon "calendar" %>
       <p>
-        <% if param_key == "start_date" %>
+        <% if param_value !~ /\d{4}-\d{2}-\d{2}/ %>
+          <%# Preset label like "过去7天" %>
+          <%= param_value %>
+        <% elsif param_key == "start_date" %>
           <%= t(".on_or_after", date: param_value) %>
         <% else %>
           <%= t(".on_or_before", date: param_value) %>

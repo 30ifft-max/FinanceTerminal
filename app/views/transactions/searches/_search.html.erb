@@ -1,8 +1,19 @@
 <%= render "transactions/searches/form" %>
 
-<ul id="transaction-search-filters" class="flex items-center flex-wrap gap-2 mb-4">
-  <% @q.reject { |key| key == "amount_operator" }.each do |param_key, param_value| %>
-    <% unless param_value.blank? %>
+<% visible_filters = @q.reject { |key| key.in?(%w[amount_operator date_preset_label]) } %>
+<% if visible_filters.values.any?(&:present?) %>
+  <ul id="transaction-search-filters" class="flex items-center flex-wrap gap-2 mb-4">
+    <li>
+      <%= render DS::Link.new(
+        text: t("transactions.searches.menu.clear_filters"),
+        variant: "ghost",
+        size: :sm,
+        icon: "x",
+        href: transactions_path(clear_filters: true)
+      ) %>
+    </li>
+    <% visible_filters.each do |param_key, param_value| %>
+      <% next if param_value.blank? %>
       <% if param_key == "amount" %>
         <% amount_operator = case @q[:amount_operator]
                              when "equal"
@@ -15,11 +26,15 @@
                                t(@q[:amount_operator])
                              end %>
         <%= render partial: "transactions/searches/filters/badge", locals: { param_key: "amount", param_value: "#{amount_operator} #{param_value}" } %>
+      <% elsif param_key == "start_date" && @q[:date_preset_label].present? %>
+        <%= render partial: "transactions/searches/filters/badge", locals: { param_key: "start_date", param_value: @q[:date_preset_label] } %>
+      <% elsif param_key == "end_date" && @q[:date_preset_label].present? %>
+        <%# Skip end_date badge when preset label covers both %>
       <% else %>
         <% Array(param_value).each do |value| %>
           <%= render partial: "transactions/searches/filters/badge", locals: { param_key: param_key, param_value: value } %>
         <% end %>
       <% end %>
     <% end %>
-  <% end %>
-</ul>
+  </ul>
+<% end %>

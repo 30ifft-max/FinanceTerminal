@@ -30,7 +30,6 @@ hu:
       page_title: Szabályok
       delete_all_rules: Összes szabály törlése
       new_rule: Új szabály
-      ai_cost_warning: Az AI-t igénybe vevő szabályakciók pénzbe kerülnek. Szűrj minél szűkebbre a felesleges költségek elkerülése érdekében.
       rules_heading: Szabályok
       sort_by: "Rendezés:"
       sort_name: Név szerint

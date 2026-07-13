@@ -1,4 +1,4 @@
-<div class="space-y-4 pb-6 lg:pb-12 flex flex-col">
+<div class="space-y-4 pb-6 lg:pb-12 flex flex-col txn-dark-scope">
   <header class="flex justify-between items-center text-primary font-medium">
     <h1 class="text-xl"><%= t(".title") %></h1>
     <div class="flex items-center gap-5">
@@ -32,7 +32,8 @@
             variant: "primary",
             href: new_transaction_path,
             frame: :modal,
-            class: "hidden md:inline-flex"
+            size: :md,
+            class: "hidden md:inline-flex gap-2"
           ) %>
 
         <%= render DS::Link.new(
@@ -46,27 +47,58 @@
     </div>
   </header>
 
-  <%= render "summary", totals: @search.totals %>
   <% if Current.family.recurring_transactions_disabled? %>
     <%= render "transactions/list", transactions: @transactions, projected_recurring: @projected_recurring, q: params[:q], pagy: @pagy %>
   <% else %>
-    <%= render DS::Tabs.new(active_tab: params[:tab].presence || "transactions") do |tabs| %>
-      <% tabs.with_nav(classes: "max-w-fit") do |nav| %>
-        <% nav.with_btn(id: "transactions", label: t("transactions.show.tab_transactions"), classes: "px-6") %>
-        <% nav.with_btn(id: "upcoming", label: t("transactions.show.tab_upcoming"), classes: "px-6") %>
-      <% end %>
-
-      <% tabs.with_panel(tab_id: "transactions") do %>
-        <div class="bg-container rounded-xl shadow-border-xs">
-          <%= render "transactions/list", transactions: @transactions, projected_recurring: @projected_recurring, q: params[:q], pagy: @pagy %>
+    <% active_tab = params[:tab].presence || "transactions" %>
+    <% tab_btn_classes = "focus-ring w-full inline-flex justify-center items-center whitespace-nowrap text-sm font-medium px-6 py-1 rounded-md motion-safe:transition-colors motion-safe:duration-200" %>
+    <% tab_active_classes = "tab-item-active text-primary shadow-sm" %>
+    <% tab_inactive_classes = "text-secondary hover:bg-surface-inset-hover" %>
+    <%= render DS::Tabs.new(
+      active_tab: active_tab,
+      variant: :unstyled,
+      active_btn_classes: tab_active_classes,
+      inactive_btn_classes: tab_inactive_classes
+    ) do %>
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex bg-surface-inset p-1 rounded-lg max-w-fit" role="tablist" aria-orientation="horizontal">
+          <% [ [ "transactions", t("transactions.show.tab_transactions") ], [ "upcoming", t("transactions.show.tab_upcoming") ] ].each do |id, label| %>
+            <% is_active = id == active_tab %>
+            <button type="button" id="tab-<%= id %>" role="tab"
+              aria-selected="<%= is_active %>" aria-controls="panel-<%= id %>" tabindex="<%= is_active ? "0" : "-1" %>"
+              data-id="<%= id %>" data-action="click->DS--tabs#show keydown->DS--tabs#handleKeydown" data-DS--tabs-target="navBtn"
+              class="<%= class_names(tab_btn_classes, is_active ? tab_active_classes : tab_inactive_classes) %>">
+              <%= label %>
+            </button>
+          <% end %>
         </div>
-      <% end %>
 
-      <% tabs.with_panel(tab_id: "upcoming") do %>
-        <div class="bg-container rounded-xl shadow-border-xs">
-          <%= render "transactions/upcoming" %>
+        <div class="flex bg-surface-inset p-1 rounded-lg max-w-fit">
+          <% is_active = active_tab == "rules" %>
+          <button type="button" id="tab-rules" role="tab"
+            aria-selected="<%= is_active %>" aria-controls="panel-rules" tabindex="<%= is_active ? "0" : "-1" %>"
+            data-id="rules" data-action="click->DS--tabs#show keydown->DS--tabs#handleKeydown" data-DS--tabs-target="navBtn"
+            class="<%= class_names(tab_btn_classes, is_active ? tab_active_classes : tab_inactive_classes) %>">
+            <%= t("transactions.show.tab_rules") %>
+          </button>
         </div>
-      <% end %>
+      </div>
+
+      <div role="tabpanel" id="panel-transactions" aria-labelledby="tab-transactions" tabindex="0" data-id="transactions" data-DS--tabs-target="panel" class="outline-none <%= "hidden" unless active_tab == "transactions" %>">
+        <%= render "transactions/list", transactions: @transactions, projected_recurring: @projected_recurring, q: params[:q], pagy: @pagy %>
+      </div>
+
+      <div role="tabpanel" id="panel-upcoming" aria-labelledby="tab-upcoming" tabindex="0" data-id="upcoming" data-DS--tabs-target="panel" class="outline-none <%= "hidden" unless active_tab == "upcoming" %>">
+        <%= render "transactions/upcoming" %>
+      </div>
+
+      <div role="tabpanel" id="panel-rules" aria-labelledby="tab-rules" tabindex="0" data-id="rules" data-DS--tabs-target="panel" class="outline-none <%= "hidden" unless active_tab == "rules" %>">
+        <%= turbo_frame_tag "rules_tab_panel", src: rules_path, loading: :lazy do %>
+          <div class="flex justify-center items-center py-20">
+            <%= icon("loader-circle", class: "h-6 w-6 animate-spin text-secondary") %>
+          </div>
+        <% end %>
+      </div>
     <% end %>
   <% end %>
 </div>

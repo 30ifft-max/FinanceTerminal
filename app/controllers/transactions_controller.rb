@@ -15,7 +15,7 @@ class TransactionsController < ApplicationController
   def index
     @q = search_params
     accessible_account_ids = Current.user.accessible_accounts.pluck(:id)
-    @search = Transaction::Search.new(Current.family, filters: @q, accessible_account_ids: accessible_account_ids)
+    @search = Transaction::Search.new(Current.family, filters: @q.except("date_preset_label"), accessible_account_ids: accessible_account_ids)
 
     base_scope = @search.transactions_scope
                        .reverse_chronological
@@ -25,7 +25,7 @@ class TransactionsController < ApplicationController
                          :transfer_as_inflow, :transfer_as_outflow
                        )
 
-    @pagy, @transactions = pagy(base_scope, limit: safe_per_page)
+    @pagy, @transactions = pagy(base_scope, limit: safe_per_page(default: 30, allowed_values: [ 30, 50, 200 ]))
     Transaction::ActivitySecurityPreloader.new(@transactions).preload
 
     # Preload split parent data
@@ -498,7 +498,7 @@ class TransactionsController < ApplicationController
         .alphabetically
         .includes(:account_providers, logo_attachment: :blob)
         .to_a
-      @categories = Current.family.categories.alphabetically.to_a
+      @categories = Current.family.categories.assignable.alphabetically.to_a
       @merchants = Current.family.available_merchants_for(Current.user).alphabetically.to_a
       @tags = Current.family.tags.alphabetically.to_a
     end
@@ -526,7 +526,7 @@ class TransactionsController < ApplicationController
       cleaned_params = params.fetch(:q, {})
               .permit(
                 :start_date, :end_date, :search, :amount,
-                :amount_operator, :active_accounts_only,
+                :amount_operator, :active_accounts_only, :date_preset_label,
                 accounts: [], account_ids: [],
                 categories: [], merchants: [], types: [], tags: [], status: []
               )

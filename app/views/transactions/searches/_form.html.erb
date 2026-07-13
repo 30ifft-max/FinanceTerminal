@@ -7,7 +7,7 @@
 
   <div class="flex gap-2 mb-4">
     <div class="grow">
-      <div class="flex items-center px-3 py-2 gap-2 border border-secondary rounded-lg focus-within:ring-secondary focus-within:border-secondary">
+      <div class="flex items-center px-3 py-2 gap-2 bg-container border border-secondary rounded-lg focus-within:ring-secondary focus-within:border-secondary">
         <%= icon("search") %>
         <%= form.text_field :search,
                             placeholder: t(".search_placeholder"),
@@ -15,6 +15,31 @@
                             class: "form-field__input placeholder:text-sm placeholder:text-secondary",
                             "data-auto-submit-form-target": "auto" %>
       </div>
+    </div>
+
+    <%# Date range popover — independent from the main filter menu %>
+    <div data-controller="date-range-preset">
+      <%= render DS::Popover.new(variant: "button", no_padding: true) do |popover| %>
+        <% date_label = if @q[:date_preset_label].present?
+             @q[:date_preset_label]
+           elsif @q[:start_date].present? || @q[:end_date].present?
+             [@q[:start_date], @q[:end_date]].compact.join(" ~ ")
+           else
+             t("transactions.search.filters.date")
+           end %>
+        <% popover.with_button(
+          id: "transaction-date-button",
+          type: "button",
+          text: date_label,
+          variant: "outline",
+          icon: "calendar",
+          data: { date_range_preset_target: "triggerButton" }
+        ) %>
+
+        <% popover.with_custom_content do %>
+          <%= render "transactions/searches/filters/date_popover", form: form %>
+        <% end %>
+      <% end %>
     </div>
 
     <%= render DS::Popover.new(variant: "button", no_padding: true) do |popover| %>
@@ -29,17 +54,6 @@
       <% popover.with_custom_content do %>
         <%= render "transactions/searches/menu", form: form %>
       <% end %>
-    <% end %>
-
-    <%= button_tag type: "button",
-        id: "toggle-checkboxes-button",
-        aria: { label: t(".toggle_selection_checkboxes") },
-        class: "lg:hidden font-medium whitespace-nowrap inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm text-primary border border-secondary hover:bg-surface-hover",
-        data: {
-          action: "click->checkbox-toggle#toggle",
-          checkbox_toggle_target: "toggleButton"
-        } do %>
-      <%= icon("list-todo") %>
     <% end %>
   </div>
 <% end %>

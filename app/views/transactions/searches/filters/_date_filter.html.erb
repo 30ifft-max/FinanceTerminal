@@ -1,11 +1,34 @@
 <%# locals: (form:) %>
-<div class="p-3">
-  <%= form.date_field :start_date,
-                      placeholder: t(".start_date"),
-                      value: @q[:start_date],
-                      class: "block w-full border border-secondary rounded-md bg-container py-2 pl-3 pr-3 text-base sm:text-sm focus-visible:ring-2 focus-visible:ring-alpha-black-300" %>
-  <%= form.date_field :end_date,
-                      placeholder: t(".end_date"),
-                      value: @q[:end_date],
-                      class: "block w-full border border-secondary rounded-md bg-container py-2 pl-3 pr-3 text-base sm:text-sm mt-2 focus-visible:ring-2 focus-visible:ring-alpha-black-300" %>
+<div class="p-3 space-y-3" data-controller="date-range-preset">
+  <div class="flex gap-2">
+    <%= form.date_field :start_date,
+                        placeholder: t(".start_date"),
+                        value: @q[:start_date],
+                        data: { date_range_preset_target: "startDate" },
+                        class: "block w-full border border-secondary rounded-lg bg-container-inset py-2.5 px-3 text-sm text-primary focus-visible:ring-2 focus-visible:ring-alpha-black-300" %>
+    <%= form.date_field :end_date,
+                        placeholder: t(".end_date"),
+                        value: @q[:end_date],
+                        data: { date_range_preset_target: "endDate" },
+                        class: "block w-full border border-secondary rounded-lg bg-container-inset py-2.5 px-3 text-sm text-primary focus-visible:ring-2 focus-visible:ring-alpha-black-300" %>
+  </div>
+  <div class="flex flex-wrap gap-1.5">
+    <% [
+      [ t("transactions.searches.filters.date_filter.preset_7d",  default: "7天"),   7,  :days   ],
+      [ t("transactions.searches.filters.date_filter.preset_14d", default: "14天"),  14, :days   ],
+      [ t("transactions.searches.filters.date_filter.preset_30d", default: "30天"),  30, :days   ],
+      [ t("transactions.searches.filters.date_filter.preset_this_month", default: "本月"), 0, :this_month ],
+      [ t("transactions.searches.filters.date_filter.preset_last_month", default: "上月"), 0, :last_month ],
+      [ t("transactions.searches.filters.date_filter.preset_this_year",  default: "今年"), 0, :this_year  ],
+      [ t("transactions.searches.filters.date_filter.preset_last_year",  default: "去年"), 0, :last_year  ],
+    ].each do |label, amount, kind| %>
+      <button type="button"
+        class="px-2.5 py-1 text-xs font-medium rounded-full bg-container-inset-hover text-secondary hover:text-primary hover:bg-container-inset transition-colors"
+        data-action="date-range-preset#apply"
+        data-date-range-preset-amount-param="<%= amount %>"
+        data-date-range-preset-kind-param="<%= kind %>">
+        <%= label %>
+      </button>
+    <% end %>
+  </div>
 </div>

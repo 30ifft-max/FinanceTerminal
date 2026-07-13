@@ -96,6 +96,9 @@ en:
       tags_label: Tags
       tab_transactions: Transactions
       tab_upcoming: Upcoming
+      tab_rules: Rules
+      cancel_button: Cancel
+      done_button: Done
       uncategorized: "(uncategorized)"
       additional_details: "Additional details"
       payee: "Payee"
@@ -287,6 +290,16 @@ en:
         date_filter:
           start_date: "Start date"
           end_date: "End date"
+          preset_7d: "Last 7 days"
+          preset_14d: "Last 14 days"
+          preset_30d: "Last 30 days"
+          preset_this_month: "This month"
+          preset_last_month: "Last month"
+          preset_this_year: "This year"
+          preset_last_year: "Last year"
+          range_title: "Date range"
+          clear: "Clear"
+          clear_all: "Clear"
         merchant_filter:
           filter_merchants: Filter merchants
         tag_filter:

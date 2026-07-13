@@ -13,16 +13,22 @@ class RulesController < ApplicationController
 
     @rules = Current.family.rules.includes(conditions: :sub_conditions).order(@sort_by => @direction)
 
-    # Fetch recent rule runs with pagination
+    # Fetch recent rule runs with pagination, limited to the last 30 days
     recent_runs_scope = RuleRun
                           .joins(:rule)
                           .where(rules: { family_id: Current.family.id })
+                          .where(executed_at: 30.days.ago..)
                           .recent
                           .includes(:rule)
 
     @pagy, @recent_runs = pagy(recent_runs_scope, limit: safe_per_page, page_param: :runs_page)
 
-    render layout: "settings"
+    # When lazily loaded inside the "规则" tab on the Transactions page, we
+    # only need the `rules_tab_panel` turbo-frame fragment, not the full
+    # Settings shell around it.
+    @embedded_in_tab = request.headers["Turbo-Frame"] == "rules_tab_panel"
+
+    render layout: @embedded_in_tab ? false : "settings"
   end
 
   def new

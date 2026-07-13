@@ -74,8 +74,6 @@ ca:
       starting_from: A partir de
       then: ALESHORES
     index:
-      ai_cost_warning: Les accions de regla amb IA tenen cost. Filtra el màxim possible
-        per evitar costos innecessaris.
       delete_all_rules: Elimina totes les regles
       new_rule: Nova regla
       no_rules_description: Configura regles per executar accions a les teves transaccions

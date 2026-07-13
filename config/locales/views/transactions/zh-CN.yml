@@ -95,6 +95,9 @@ zh-CN:
       tags_label: 标签
       tab_transactions: 交易
       tab_upcoming: 待发生
+      tab_rules: 规则
+      cancel_button: 取消
+      done_button: 保存
       uncategorized: （未分类）
       additional_details: 其他详情
       payee: 收款方
@@ -268,6 +271,16 @@ zh-CN:
         date_filter:
           start_date: 开始日期
           end_date: 结束日期
+          preset_7d: 过去7天
+          preset_14d: 过去14天
+          preset_30d: 过去30天
+          preset_this_month: 本月
+          preset_last_month: 上月
+          preset_this_year: 今年
+          preset_last_year: 去年
+          range_title: 日期范围
+          clear: 清除
+          clear_all: 清除
         amount_filter:
           equal_to: 等于
           greater_than: 大于

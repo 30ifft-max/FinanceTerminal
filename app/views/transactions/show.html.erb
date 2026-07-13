@@ -84,7 +84,7 @@
             </div>
             <%= f.fields_for :entryable do |ef| %>
               <%= ef.collection_select :category_id,
-                      Current.family.categories.alphabetically,
+                      Current.family.categories.assignable.alphabetically,
                     :id, :name,
                     { label: t(".category_label"),
                       class: "text-subdued", include_blank: t(".uncategorized"),
@@ -434,4 +434,8 @@
       <% end %>
     <% end %>
   <% end %>
+  <div class="flex items-center gap-2 justify-end px-4 py-3 mt-auto border-t border-secondary">
+    <%= render DS::Button.new(text: t("transactions.show.cancel_button", default: "Cancel"), variant: "outline", size: :md, data: { action: "DS--dialog#close" }) %>
+    <%= render DS::Button.new(text: t("transactions.show.done_button", default: "Done"), variant: "primary", size: :md, data: { action: "DS--dialog#close" }) %>
+  </div>
 <% end %>
