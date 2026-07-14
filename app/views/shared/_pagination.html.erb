@@ -1,7 +1,9 @@
 <%# locals: (pagy:, per_page_options: ["10", "20", "30", "50", "100"]) %>
 
-<nav class="flex w-full items-center justify-between">
-  <div class="flex items-center gap-1 mr-3">
+<nav class="grid grid-cols-3 items-center w-full">
+  <div></div>
+
+  <div class="flex items-center gap-1 justify-self-center">
     <div>
       <% if pagy.prev %>
         <%= link_to pagy_url_for(pagy, pagy.prev),
@@ -48,7 +50,7 @@
       <% end %>
     </div>
   </div>
-  <div class="flex items-center gap-4">
+  <div class="flex items-center gap-4 justify-self-end">
     <%= select_tag :per_page,
                    options_for_select(per_page_options, pagy.limit),
                    data: { controller: "selectable-link" },
