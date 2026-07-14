@@ -2,7 +2,6 @@ module TransactionsHelper
   def transaction_search_filters
     [
       { key: "account_filter", label: t("transactions.search.filters.account"), icon: "layers" },
-      { key: "date_filter", label: t("transactions.search.filters.date"), icon: "calendar" },
       { key: "type_filter", label: t("transactions.search.filters.type"), icon: "tag" },
       { key: "status_filter", label: t("transactions.search.filters.status"), icon: "clock" },
       { key: "amount_filter", label: t("transactions.search.filters.amount"), icon: "hash" },

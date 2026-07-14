@@ -44,6 +44,7 @@ export default class extends Controller {
     if (this.hasPresetLabelTarget) this.presetLabelTarget.value = label || "";
 
     this.#setButtonLabel(label || this.defaultLabelValue);
+    this.element.closest("form")?.requestSubmit();
   }
 
   updateLabel() {

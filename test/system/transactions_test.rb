@@ -87,19 +87,23 @@ class TransactionsTest < ApplicationSystemTestCase
   end
 
   test "all filters work and empty state shows if no match" do
-    find("#transaction-filters-button").click
-
     account = @transaction.account
     category = @transaction.transaction.category
     merchant = @transaction.transaction.merchant
 
+    # Date filtering lives in its own popover now; fill it in and close
+    # without submitting so it combines with the other filters below (all
+    # popovers share the same underlying <form>).
+    find("#transaction-date-button").click
+    fill_in "q_start_date", with: 10.days.ago.to_date
+    fill_in "q_end_date", with: 1.day.ago.to_date
+    click_button "Cancel"
+
+    find("#transaction-filters-button").click
+
     within "#transaction-filters-menu" do
       click_button "Account"
       check(account.name)
-
-      click_button "Date"
-      fill_in "q_start_date", with: 10.days.ago.to_date
-      fill_in "q_end_date", with: 1.day.ago.to_date
 
       click_button "Type"
       check("Income")

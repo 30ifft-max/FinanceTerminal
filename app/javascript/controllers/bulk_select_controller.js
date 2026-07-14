@@ -133,6 +133,8 @@ export default class extends Controller {
   };
 
   _updateSelectionBar() {
+    if (!this.hasSelectionBarTarget || !this.hasSelectionBarTextTarget) return;
+
     const count = this.selectedIdsValue.length;
     this.selectionBarTextTarget.innerText = `${count} ${this._pluralizedResourceName()} ${this.selectedLabelValue}`;
     this.selectionBarTarget.classList.toggle("hidden", count === 0);
@@ -181,7 +183,8 @@ export default class extends Controller {
       const groupSelected =
         rows.length > 0 &&
         rows.every((row) => this.selectedIdsValue.includes(row.dataset.id));
-      group.querySelector("input[type='checkbox']").checked = groupSelected;
+      const checkbox = group.querySelector("input[type='checkbox']");
+      if (checkbox) checkbox.checked = groupSelected;
     });
   }
 
