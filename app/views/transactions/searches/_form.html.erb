@@ -18,12 +18,14 @@
     </div>
 
     <%# Date range popover — independent from the main filter menu %>
-    <div data-controller="date-range-preset">
+    <% custom_date_label = t("transactions.searches.filters.date_filter.custom_range", default: "自选日期") %>
+    <div data-controller="date-range-preset"
+         data-date-range-preset-custom-label-value="<%= custom_date_label %>">
       <%= render DS::Popover.new(variant: "button", no_padding: true) do |popover| %>
         <% date_label = if @q[:date_preset_label].present?
              @q[:date_preset_label]
            elsif @q[:start_date].present? || @q[:end_date].present?
-             [@q[:start_date], @q[:end_date]].compact.join(" ~ ")
+             custom_date_label
            else
              t("transactions.search.filters.date")
            end %>

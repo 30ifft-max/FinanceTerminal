@@ -290,6 +290,7 @@ en:
         date_filter:
           start_date: "Start date"
           end_date: "End date"
+          custom_range: "Custom range"
           preset_7d: "Last 7 days"
           preset_14d: "Last 14 days"
           preset_30d: "Last 30 days"

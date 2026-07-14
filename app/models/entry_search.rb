@@ -24,12 +24,22 @@ class EntrySearch
     end
 
     def apply_date_filters(scope, start_date, end_date)
+      start_date = safe_parse_date(start_date)
+      end_date = safe_parse_date(end_date)
       return scope if start_date.blank? && end_date.blank?
 
       query = scope
       query = query.where("entries.date >= ?", start_date) if start_date.present?
       query = query.where("entries.date <= ?", end_date) if end_date.present?
       query
+    end
+
+    def safe_parse_date(value)
+      return nil if value.blank?
+
+      Date.parse(value.to_s)
+    rescue ArgumentError, TypeError
+      nil
     end
 
     def apply_amount_filter(scope, amount, amount_operator)

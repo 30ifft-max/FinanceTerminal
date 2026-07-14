@@ -1,4 +1,19 @@
 <%# locals: (form:) %>
+<%
+  start_value = @q[:start_date].presence
+  start_y, start_m, start_d = (start_value || "").split("-")
+  start_y = start_y.presence&.slice(2..) || ""
+  start_m ||= ""
+  start_d ||= ""
+
+  end_value = @q[:end_date].presence
+  end_y, end_m, end_d = (end_value || "").split("-")
+  end_y = end_y.presence&.slice(2..) || ""
+  end_m ||= ""
+  end_d ||= ""
+
+  segment_classes = "border border-secondary rounded-lg bg-container-inset py-2.5 px-2 text-sm text-primary text-center focus-visible:ring-2 focus-visible:ring-alpha-black-300"
+%>
 <div class="flex flex-col w-[420px]">
   <%= form.hidden_field :date_preset_label, value: @q[:date_preset_label], data: { date_range_preset_target: "presetLabel" } %>
   <div class="flex border-b border-secondary">
@@ -34,10 +49,26 @@
             <%= t("transactions.searches.filters.date_filter.clear", default: "清除") %>
           </button>
         </div>
-        <%= form.date_field :start_date,
-                            value: @q[:start_date],
-                            data: { date_range_preset_target: "startDate", action: "change->date-range-preset#updateLabel" },
-                            class: "block w-full border border-secondary rounded-lg bg-container-inset py-2.5 px-3 text-sm text-primary focus-visible:ring-2 focus-visible:ring-alpha-black-300" %>
+        <div class="flex items-center gap-1">
+          <input type="text" inputmode="numeric" maxlength="2" placeholder="YY" autocomplete="off" value="<%= start_y %>"
+            data-date-range-preset-target="startYear"
+            data-action="keydown->date-range-preset#handleSegmentKeydown input->date-range-preset#handleSegmentInput"
+            data-date-range-preset-group-param="start" data-date-range-preset-field-param="year"
+            class="w-10 <%= segment_classes %>">
+          <span class="text-secondary">-</span>
+          <input type="text" inputmode="numeric" maxlength="2" placeholder="MM" autocomplete="off" value="<%= start_m %>"
+            data-date-range-preset-target="startMonth"
+            data-action="keydown->date-range-preset#handleSegmentKeydown input->date-range-preset#handleSegmentInput"
+            data-date-range-preset-group-param="start" data-date-range-preset-field-param="month"
+            class="w-12 <%= segment_classes %>">
+          <span class="text-secondary">-</span>
+          <input type="text" inputmode="numeric" maxlength="2" placeholder="DD" autocomplete="off" value="<%= start_d %>"
+            data-date-range-preset-target="startDay"
+            data-action="keydown->date-range-preset#handleSegmentKeydown input->date-range-preset#handleSegmentInput"
+            data-date-range-preset-group-param="start" data-date-range-preset-field-param="day"
+            class="w-12 <%= segment_classes %>">
+        </div>
+        <%= form.hidden_field :start_date, value: start_value, data: { date_range_preset_target: "startDate" } %>
       </div>
       <div>
         <div class="flex items-center justify-between mb-1">
@@ -46,10 +77,26 @@
             <%= t("transactions.searches.filters.date_filter.clear", default: "清除") %>
           </button>
         </div>
-        <%= form.date_field :end_date,
-                            value: @q[:end_date],
-                            data: { date_range_preset_target: "endDate", action: "change->date-range-preset#updateLabel" },
-                            class: "block w-full border border-secondary rounded-lg bg-container-inset py-2.5 px-3 text-sm text-primary focus-visible:ring-2 focus-visible:ring-alpha-black-300" %>
+        <div class="flex items-center gap-1">
+          <input type="text" inputmode="numeric" maxlength="2" placeholder="YY" autocomplete="off" value="<%= end_y %>"
+            data-date-range-preset-target="endYear"
+            data-action="keydown->date-range-preset#handleSegmentKeydown input->date-range-preset#handleSegmentInput"
+            data-date-range-preset-group-param="end" data-date-range-preset-field-param="year"
+            class="w-10 <%= segment_classes %>">
+          <span class="text-secondary">-</span>
+          <input type="text" inputmode="numeric" maxlength="2" placeholder="MM" autocomplete="off" value="<%= end_m %>"
+            data-date-range-preset-target="endMonth"
+            data-action="keydown->date-range-preset#handleSegmentKeydown input->date-range-preset#handleSegmentInput"
+            data-date-range-preset-group-param="end" data-date-range-preset-field-param="month"
+            class="w-12 <%= segment_classes %>">
+          <span class="text-secondary">-</span>
+          <input type="text" inputmode="numeric" maxlength="2" placeholder="DD" autocomplete="off" value="<%= end_d %>"
+            data-date-range-preset-target="endDay"
+            data-action="keydown->date-range-preset#handleSegmentKeydown input->date-range-preset#handleSegmentInput"
+            data-date-range-preset-group-param="end" data-date-range-preset-field-param="day"
+            class="w-12 <%= segment_classes %>">
+        </div>
+        <%= form.hidden_field :end_date, value: end_value, data: { date_range_preset_target: "endDate" } %>
       </div>
     </div>
   </div>

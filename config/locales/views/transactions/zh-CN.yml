@@ -271,6 +271,7 @@ zh-CN:
         date_filter:
           start_date: 开始日期
           end_date: 结束日期
+          custom_range: 自选日期
           preset_7d: 过去7天
           preset_14d: 过去14天
           preset_30d: 过去30天
