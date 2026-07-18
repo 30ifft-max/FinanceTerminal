@@ -125,11 +125,18 @@ zh-CN:
         title: 投资账户费率
         subtitle: 为每个投资账户设置默认手续费率，录入买卖操作时将按「费率 × 成交量 × 成交价」自动预填手续费。
         empty: 还没有投资或加密货币账户。
+        analysis_title: 投资分析参数
+        analysis_subtitle: 「分析」页风险指标（夏普、贝塔等）使用的基准指数与无风险利率。
+        benchmark_label: 基准指数代码
+        benchmark_hint: 如 SPY、QQQ——保存时会自动抓取近一年日线价格。
+        risk_free_label: 无风险利率（年化 %）
+        risk_free_hint: 例如填 3.0 表示年化 3%。
         rate_placeholder: 如 0.0008
         save: 保存
         hint: 请以小数形式填写费率，例如 0.0008 表示成交额的 0.08%（万8）。留空则清除费率。
       update:
         success: "已更新 %{name} 的手续费率。"
+        analysis_success: 分析参数已更新。
     preferences:
       show:
         country: 国家

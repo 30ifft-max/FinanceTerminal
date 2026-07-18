@@ -125,11 +125,18 @@ en:
         title: Trade fee rates
         subtitle: Set a default fee rate per investment account. It will pre-fill the fee when logging a trade (fee = rate × quantity × price).
         empty: No investment or crypto accounts yet.
+        analysis_title: Investment analysis settings
+        analysis_subtitle: Benchmark and risk-free rate used by the Analysis page's risk metrics (Sharpe, beta, etc.).
+        benchmark_label: Benchmark ticker
+        benchmark_hint: e.g. SPY or QQQ — a year of daily prices is imported on save.
+        risk_free_label: Risk-free rate (annual %)
+        risk_free_hint: e.g. 3.0 means 3% per year.
         rate_placeholder: e.g. 0.0008
         save: Save
         hint: Enter the rate as a decimal fraction, e.g. 0.0008 means 0.08% of the trade value. Leave blank to remove.
       update:
         success: "Fee rate for %{name} updated."
+        analysis_success: Analysis settings updated.
     preferences:
       show:
         country: Country

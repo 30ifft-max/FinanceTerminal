@@ -178,6 +178,37 @@
     <% end %>
   </div>
 
+  <%# E. Investment risk metrics %>
+  <div class="bg-container rounded-xl border border-alpha-black-25 shadow-border-xs p-4">
+    <h2 class="text-sm font-medium text-primary mb-4"><%= t(".risk_metrics_title") %></h2>
+    <% if @risk.enough_data? %>
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+        <% pct_tile = ->(v, invert: false) {
+             v.nil? ? [ "—", "text-primary" ] : [ number_to_percentage(v, precision: 2), (invert ? v.positive? : v.negative?) ? "text-destructive" : "text-success" ]
+           } %>
+        <% [
+          [ t(".stat_twr"), *pct_tile.call(@risk.twr) ],
+          [ t(".stat_volatility"), @risk.volatility ? number_to_percentage(@risk.volatility, precision: 2) : "—", "text-primary" ],
+          [ t(".stat_mdd"), @risk.max_drawdown ? number_to_percentage(@risk.max_drawdown, precision: 2) : "—", "text-destructive" ],
+          [ t(".stat_sharpe"), @risk.sharpe&.to_s || "—", "text-primary" ],
+          [ t(".stat_sortino"), @risk.sortino&.to_s || "—", "text-primary" ],
+          [ t(".stat_beta"), @risk.beta&.to_s || (@risk.benchmark_ticker ? "—" : t(".beta_needs_benchmark")), "text-primary" ],
+          [ t(".stat_var"), @risk.var_95 ? format_money(@risk.var_95) : "—", "text-primary" ],
+        ].each do |label, value, color| %>
+          <div>
+            <p class="text-xs uppercase text-secondary font-medium"><%= label %></p>
+            <p class="text-lg font-medium mt-0.5 privacy-sensitive <%= color %>"><%= value %></p>
+          </div>
+        <% end %>
+      </div>
+      <p class="text-xs text-secondary mt-3">
+        <%= t(".risk_metrics_hint", rate: @risk.risk_free_rate, benchmark: @risk.benchmark_ticker || t(".no_benchmark")) %>
+      </p>
+    <% else %>
+      <p class="text-sm text-secondary py-6 text-center"><%= t(".risk_metrics_insufficient") %></p>
+    <% end %>
+  </div>
+
   <%# G. Risk management %>
   <div class="bg-container rounded-xl border border-alpha-black-25 shadow-border-xs p-4">
     <h2 class="text-sm font-medium text-primary mb-4"><%= t(".risk_title") %></h2>

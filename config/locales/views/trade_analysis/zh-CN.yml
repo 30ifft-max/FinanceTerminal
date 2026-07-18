@@ -38,6 +38,18 @@ zh-CN:
       stat_total_fees: 累计手续费
       stat_fee_ratio: 费用占盈利比
       by_ticker_title: 分品种已实现盈亏
+      risk_metrics_title: 风险指标（近一年）
+      risk_metrics_insufficient: 日线数据还不足——风险指标至少需要约 20 个交易日的净值序列。
+      stat_twr: 时间加权收益 TWR
+      stat_volatility: 年化波动率
+      stat_mdd: 最大回撤
+      stat_sharpe: 夏普比率
+      stat_sortino: 索提诺比率
+      stat_beta: 贝塔 β
+      beta_needs_benchmark: 需设置基准
+      stat_var: 单日VaR(95%)
+      no_benchmark: 未设置
+      risk_metrics_hint: 基于证券日线价格构建的资金流调整净值序列。无风险利率：%{rate}%% · 基准：%{benchmark}（在 设置 → 投资账户费率 中配置）。
       risk_title: 风险管理
       stat_preset_coverage: 止损预设覆盖率
       stat_avg_risk_reward: 平均风险报酬比

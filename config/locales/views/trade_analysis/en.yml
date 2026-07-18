@@ -39,6 +39,18 @@ en:
       stat_total_fees: Total fees
       stat_fee_ratio: Fees / gross win
       by_ticker_title: Realized P/L by security
+      risk_metrics_title: Risk metrics (trailing year)
+      risk_metrics_insufficient: Not enough daily price history yet — risk metrics need at least ~20 trading days of data.
+      stat_twr: TWR
+      stat_volatility: Volatility (ann.)
+      stat_mdd: Max drawdown
+      stat_sharpe: Sharpe
+      stat_sortino: Sortino
+      stat_beta: Beta
+      beta_needs_benchmark: Set benchmark
+      stat_var: 1-day VaR 95%
+      no_benchmark: none
+      risk_metrics_hint: "Flow-adjusted daily returns from security prices. Risk-free rate: %{rate}%% · Benchmark: %{benchmark} (configure both under Settings → Trade fee rates)."
       risk_title: Risk management
       stat_preset_coverage: Stop-loss coverage
       stat_avg_risk_reward: Avg risk/reward
