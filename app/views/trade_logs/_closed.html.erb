@@ -8,27 +8,32 @@
       <table class="w-full text-sm">
         <thead>
           <tr class="text-xs uppercase text-secondary border-b border-alpha-black-50">
-            <th class="text-left font-medium px-4 py-2.5"><%= t(".col_period") %></th>
+            <th class="text-left font-medium px-4 py-2.5 sticky left-0 z-10 bg-container"><%= t(".col_period") %></th>
             <th class="text-left font-medium px-4 py-2.5"><%= t(".col_account") %></th>
             <th class="text-left font-medium px-4 py-2.5"><%= t(".col_security") %></th>
             <th class="text-right font-medium px-4 py-2.5"><%= t(".col_qty") %></th>
+            <th class="text-right font-medium px-4 py-2.5"><%= t(".col_avg_buy") %></th>
+            <th class="text-right font-medium px-4 py-2.5"><%= t(".col_avg_sell") %></th>
             <th class="text-right font-medium px-4 py-2.5"><%= t(".col_invested") %></th>
             <th class="text-right font-medium px-4 py-2.5"><%= t(".col_proceeds") %></th>
             <th class="text-right font-medium px-4 py-2.5"><%= t(".col_fees") %></th>
             <th class="text-right font-medium px-4 py-2.5"><%= t(".col_net_profit") %></th>
             <th class="text-right font-medium px-4 py-2.5"><%= t(".col_return_pct") %></th>
             <th class="text-right font-medium px-4 py-2.5"><%= t(".col_holding_days") %></th>
+            <th class="text-left font-medium px-4 py-2.5"><%= t(".col_review") %></th>
           </tr>
         </thead>
         <tbody class="divide-y divide-alpha-black-50">
           <% closed_positions.each do |position| %>
             <tr class="hover:bg-container-hover">
-              <td class="px-4 py-2.5 whitespace-nowrap text-secondary">
+              <td class="px-4 py-2.5 whitespace-nowrap text-secondary sticky left-0 z-10 bg-container">
                 <%= I18n.l(position.opened_on, format: :default) %> ~ <%= I18n.l(position.closed_on, format: :default) %>
               </td>
               <td class="px-4 py-2.5 whitespace-nowrap text-secondary"><%= position.account.name %></td>
               <td class="px-4 py-2.5 whitespace-nowrap font-medium text-primary"><%= position.security.ticker %></td>
               <td class="px-4 py-2.5 whitespace-nowrap text-right text-primary privacy-sensitive"><%= format_quantity(position.total_qty) %></td>
+              <td class="px-4 py-2.5 whitespace-nowrap text-right text-secondary privacy-sensitive"><%= position.avg_buy_price ? format_money(Money.new(position.avg_buy_price, position.currency)) : "—" %></td>
+              <td class="px-4 py-2.5 whitespace-nowrap text-right text-secondary privacy-sensitive"><%= position.avg_sell_price ? format_money(Money.new(position.avg_sell_price, position.currency)) : "—" %></td>
               <td class="px-4 py-2.5 whitespace-nowrap text-right text-secondary privacy-sensitive"><%= format_money(Money.new(position.total_invested, position.currency)) %></td>
               <td class="px-4 py-2.5 whitespace-nowrap text-right text-secondary privacy-sensitive"><%= format_money(Money.new(position.total_proceeds, position.currency)) %></td>
               <td class="px-4 py-2.5 whitespace-nowrap text-right text-secondary privacy-sensitive"><%= position.total_fees.zero? ? "—" : position.total_fees.to_s("F").sub(/\.?0+\z/, "") %></td>
@@ -39,6 +44,14 @@
                 <%= position.return_pct ? number_to_percentage(position.return_pct, precision: 2) : "—" %>
               </td>
               <td class="px-4 py-2.5 whitespace-nowrap text-right text-secondary"><%= t(".days", count: position.holding_days) %></td>
+              <td class="px-4 py-2.5 min-w-56">
+                <%= form_with url: closed_position_path(position), method: :patch, class: "flex items-center gap-1.5" do |form| %>
+                  <input type="text" name="closed_position[notes]" value="<%= position.notes %>" autocomplete="off"
+                    placeholder="<%= t(".review_placeholder") %>"
+                    class="grow border border-secondary rounded-lg bg-container-inset py-1 px-2 text-sm text-primary focus-visible:ring-2 focus-visible:ring-alpha-black-300">
+                  <%= render DS::Button.new(text: t(".review_save"), type: :submit, size: :sm, variant: "outline") %>
+                <% end %>
+              </td>
             </tr>
           <% end %>
         </tbody>

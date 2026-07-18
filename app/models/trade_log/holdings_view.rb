@@ -5,6 +5,7 @@ module TradeLog
   class HoldingsView
     Row = Struct.new(
       :holding, :account, :stop_loss, :take_profit, :converted_amount, :converted_trend_value,
+      :opened_on, :total_fees, :cost_avg, :position_avg,
       keyword_init: true
     )
 
@@ -16,13 +17,18 @@ module TradeLog
     def rows
       @rows ||= accounts.flat_map do |account|
         account.current_holdings.includes(:security).reject { |h| h.security.cash? }.map do |holding|
-          presets = latest_trade_log_presets(account, holding.security)
+          segment = open_segment(account, holding.security)
+          stats = segment_stats(segment)
 
           Row.new(
             holding: holding,
             account: account,
-            stop_loss: presets["stop_loss"],
-            take_profit: presets["take_profit"],
+            stop_loss: stats[:stop_loss_avg],
+            take_profit: stats[:take_profit_avg],
+            opened_on: segment.first&.entry&.date,
+            total_fees: segment.sum { |t| t.fee.to_d },
+            cost_avg: stats[:cost_avg],
+            position_avg: stats[:position_avg],
             converted_amount: convert(holding.amount_money),
             converted_trend_value: holding.trend && convert(holding.trend.value)
           )
@@ -60,17 +66,83 @@ module TradeLog
           .alphabetically
       end
 
-      # Stop-loss / take-profit presets from the most recent trade of this
-      # security that recorded them (stored in trades.extra["trade_log"]).
-      def latest_trade_log_presets(account, security)
-        trade = account.trades
-          .where(security: security)
-          .where("trades.extra ? 'trade_log'")
-          .joins(:entry)
-          .order("entries.date DESC, entries.created_at DESC")
-          .first
+      # Walks the open segment chronologically, mirroring the Excel macro's
+      # bookkeeping:
+      # - cost_avg (成本均价): fee-inclusive weighted average of all buys,
+      #   over cumulative bought qty (never reduced by sells)
+      # - position_avg (持仓均价): remaining-position effective cost — each
+      #   partial sell's realized P/L (vs cost_avg, net of fee) is folded back
+      #   into the average of what's still held
+      # - stop_loss_avg / take_profit_avg: qty-weighted averages of the
+      #   per-buy presets recorded in trades.extra["trade_log"]
+      def segment_stats(segment)
+        buy_qty = BigDecimal("0")
+        buy_cost = BigDecimal("0")  # incl fees
+        held_qty = BigDecimal("0")
+        position_avg = nil
+        sl_qty = BigDecimal("0")
+        sl_sum = BigDecimal("0")
+        tp_qty = BigDecimal("0")
+        tp_sum = BigDecimal("0")
 
-        trade&.extra&.dig("trade_log") || {}
+        segment.each do |trade|
+          price = trade.price.to_d
+          fee = trade.fee.to_d
+
+          if trade.qty.positive?
+            qty = trade.qty
+            buy_qty += qty
+            buy_cost += qty * price + fee
+            held_qty += qty
+            position_avg = buy_cost / buy_qty
+
+            presets = trade.extra&.dig("trade_log") || {}
+            if presets["stop_loss"].present?
+              sl_qty += qty
+              sl_sum += qty * presets["stop_loss"].to_d
+            end
+            if presets["take_profit"].present?
+              tp_qty += qty
+              tp_sum += qty * presets["take_profit"].to_d
+            end
+          else
+            qty = trade.qty.abs
+            cost_avg = buy_qty.positive? ? buy_cost / buy_qty : BigDecimal("0")
+            realized = qty * (price - cost_avg) - fee
+            remaining = held_qty - qty
+            position_avg = remaining.positive? ? (cost_avg * held_qty - realized) / remaining : nil
+            held_qty = remaining
+          end
+        end
+
+        {
+          cost_avg: buy_qty.positive? ? buy_cost / buy_qty : nil,
+          position_avg: position_avg,
+          stop_loss_avg: sl_qty.positive? ? sl_sum / sl_qty : nil,
+          take_profit_avg: tp_qty.positive? ? tp_sum / tp_qty : nil
+        }
+      end
+
+      # Trades belonging to the still-open round trip: everything after the
+      # last time the running position quantity returned to zero.
+      def open_segment(account, security)
+        trades = account.trades
+          .where(security: security)
+          .joins(:entry)
+          .includes(:entry)
+          .order("entries.date ASC, entries.created_at ASC")
+          .reject { |t| t.qty.to_d.zero? }
+
+        current = []
+        running = BigDecimal("0")
+
+        trades.each do |trade|
+          current << trade
+          running += trade.qty
+          current = [] if running.zero?
+        end
+
+        current
       end
 
       def convert(money)

@@ -46,6 +46,17 @@ class ClosedPositionTest < ActiveSupport::TestCase
     assert positions.last.net_profit.negative?
   end
 
+  test "rebuild_for! preserves review notes across rebuilds" do
+    create_trade(qty: 10, price: 100, date: 30.days.ago.to_date)
+    create_trade(qty: -10, price: 120, date: 5.days.ago.to_date)
+    ClosedPosition.rebuild_for!(@account, @security)
+    ClosedPosition.find_by!(account: @account, security: @security).update!(notes: "止盈纪律执行到位")
+
+    ClosedPosition.rebuild_for!(@account, @security)
+
+    assert_equal "止盈纪律执行到位", ClosedPosition.find_by!(account: @account, security: @security).notes
+  end
+
   private
     def create_trade(qty:, price:, date:, fee: 0)
       @account.entries.create!(

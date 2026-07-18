@@ -7,6 +7,8 @@ en:
       executed_time: Execution time (optional)
       stop_loss_price: Stop-loss price (optional)
       take_profit_price: Take-profit price (optional)
+      notes: Notes (optional)
+      notes_placeholder: Why this trade…
       account_prompt: Search account
       amount: Amount
       fee: Transaction fee

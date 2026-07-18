@@ -34,15 +34,19 @@
         <table class="w-full text-sm">
           <thead>
             <tr class="text-xs uppercase text-secondary border-b border-alpha-black-50">
-              <th class="text-left font-medium px-4 py-2.5"><%= t(".col_security") %></th>
+              <th class="text-left font-medium px-4 py-2.5 sticky left-0 z-10 bg-container"><%= t(".col_security") %></th>
               <th class="text-left font-medium px-4 py-2.5"><%= t(".col_account") %></th>
               <th class="text-right font-medium px-4 py-2.5"><%= t(".col_qty") %></th>
               <th class="text-right font-medium px-4 py-2.5"><%= t(".col_avg_cost") %></th>
+              <th class="text-right font-medium px-4 py-2.5"><%= t(".col_position_avg") %></th>
               <th class="text-right font-medium px-4 py-2.5"><%= t(".col_price") %></th>
               <th class="text-right font-medium px-4 py-2.5"><%= t(".col_stop_loss") %></th>
               <th class="text-right font-medium px-4 py-2.5"><%= t(".col_take_profit") %></th>
               <th class="text-right font-medium px-4 py-2.5"><%= t(".col_market_value") %></th>
               <th class="text-right font-medium px-4 py-2.5"><%= t(".col_unrealized") %></th>
+              <th class="text-right font-medium px-4 py-2.5"><%= t(".col_weight") %></th>
+              <th class="text-right font-medium px-4 py-2.5"><%= t(".col_opened_on") %></th>
+              <th class="text-right font-medium px-4 py-2.5"><%= t(".col_total_fees") %></th>
               <th class="text-right font-medium px-4 py-2.5"><%= t(".col_converted", currency: Current.family.currency) %></th>
             </tr>
           </thead>
@@ -50,7 +54,7 @@
             <% rows.each do |row| %>
               <% holding = row.holding %>
               <tr class="hover:bg-container-hover">
-                <td class="px-4 py-2.5 whitespace-nowrap">
+                <td class="px-4 py-2.5 whitespace-nowrap sticky left-0 z-10 bg-container">
                   <%= link_to holding_path(holding), data: { turbo_frame: :drawer }, class: "hover:underline" do %>
                     <span class="font-medium text-primary"><%= holding.ticker %></span>
                     <span class="text-secondary text-xs block truncate max-w-48"><%= holding.name %></span>
@@ -58,7 +62,8 @@
                 </td>
                 <td class="px-4 py-2.5 whitespace-nowrap text-secondary"><%= row.account.name %></td>
                 <td class="px-4 py-2.5 whitespace-nowrap text-right text-primary privacy-sensitive"><%= format_quantity(holding.qty) %></td>
-                <td class="px-4 py-2.5 whitespace-nowrap text-right text-secondary privacy-sensitive"><%= holding.avg_cost ? format_money(holding.avg_cost) : "—" %></td>
+                <td class="px-4 py-2.5 whitespace-nowrap text-right text-secondary privacy-sensitive"><%= row.cost_avg ? format_money(Money.new(row.cost_avg, holding.currency)) : "—" %></td>
+                <td class="px-4 py-2.5 whitespace-nowrap text-right text-secondary privacy-sensitive"><%= row.position_avg ? format_money(Money.new(row.position_avg, holding.currency)) : "—" %></td>
                 <td class="px-4 py-2.5 whitespace-nowrap text-right text-primary privacy-sensitive"><%= holding.price ? format_money(Money.new(holding.price, holding.currency)) : "—" %></td>
                 <td class="px-4 py-2.5 whitespace-nowrap text-right text-secondary privacy-sensitive"><%= row.stop_loss.present? ? format_money(Money.new(row.stop_loss.to_d, holding.currency)) : "—" %></td>
                 <td class="px-4 py-2.5 whitespace-nowrap text-right text-secondary privacy-sensitive"><%= row.take_profit.present? ? format_money(Money.new(row.take_profit.to_d, holding.currency)) : "—" %></td>
@@ -72,6 +77,12 @@
                     <span class="text-secondary">—</span>
                   <% end %>
                 </td>
+                <td class="px-4 py-2.5 whitespace-nowrap text-right text-secondary privacy-sensitive">
+                  <% total_value = holdings_view.total_market_value %>
+                  <%= (row.converted_amount && total_value&.amount&.positive?) ? number_to_percentage(row.converted_amount.amount / total_value.amount * 100, precision: 1) : "—" %>
+                </td>
+                <td class="px-4 py-2.5 whitespace-nowrap text-right text-secondary"><%= row.opened_on ? I18n.l(row.opened_on, format: :default) : "—" %></td>
+                <td class="px-4 py-2.5 whitespace-nowrap text-right text-secondary privacy-sensitive"><%= row.total_fees.zero? ? "—" : row.total_fees.to_s("F").sub(/\.?0+\z/, "") %></td>
                 <td class="px-4 py-2.5 whitespace-nowrap text-right text-primary privacy-sensitive"><%= row.converted_amount ? format_money(row.converted_amount) : "—" %></td>
               </tr>
             <% end %>

@@ -9,6 +9,11 @@ en:
       tab_closed: Closed positions
     closed:
       empty: No closed positions yet. When a security's holding returns to zero, its full round-trip appears here.
+      col_avg_buy: Avg buy
+      col_avg_sell: Avg sell
+      col_review: Review
+      review_placeholder: "Lessons learned…"
+      review_save: Save
       col_period: Period
       col_account: Account
       col_security: Security
@@ -31,11 +36,15 @@ en:
       col_account: Account
       col_qty: Quantity
       col_avg_cost: Avg cost
+      col_position_avg: Position avg
       col_price: Price
-      col_stop_loss: Stop-loss
-      col_take_profit: Take-profit
+      col_stop_loss: Avg stop-loss
+      col_take_profit: Avg take-profit
       col_market_value: Market value
       col_unrealized: Unrealized G/L
+      col_weight: Weight
+      col_opened_on: Opened
+      col_total_fees: Fees
       col_converted: Value (%{currency})
     log:
       empty: No trades logged yet. Use "Log trade" to record your first one.
@@ -49,7 +58,11 @@ en:
       col_take_profit: Take-profit
       col_fee: Fee
       col_amount: Amount
+      col_notes: Notes
       side_buy: Buy
       side_sell: Sell
       side_dividend: Dividend
       side_interest: Interest
+  closed_positions:
+    update:
+      success: Review note saved.

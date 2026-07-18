@@ -8,7 +8,7 @@
       <table class="w-full text-sm">
         <thead>
           <tr class="text-xs uppercase text-secondary border-b border-alpha-black-50">
-            <th class="text-left font-medium px-4 py-2.5"><%= t(".col_datetime") %></th>
+            <th class="text-left font-medium px-4 py-2.5 sticky left-0 z-10 bg-container"><%= t(".col_datetime") %></th>
             <th class="text-left font-medium px-4 py-2.5"><%= t(".col_account") %></th>
             <th class="text-left font-medium px-4 py-2.5"><%= t(".col_security") %></th>
             <th class="text-left font-medium px-4 py-2.5"><%= t(".col_side") %></th>
@@ -18,6 +18,7 @@
             <th class="text-right font-medium px-4 py-2.5"><%= t(".col_take_profit") %></th>
             <th class="text-right font-medium px-4 py-2.5"><%= t(".col_fee") %></th>
             <th class="text-right font-medium px-4 py-2.5"><%= t(".col_amount") %></th>
+            <th class="text-left font-medium px-4 py-2.5"><%= t(".col_notes") %></th>
           </tr>
         </thead>
         <tbody class="divide-y divide-alpha-black-50">
@@ -26,7 +27,7 @@
             <% log_extra = (trade.extra || {})["trade_log"] || {} %>
             <% is_sell = trade.qty.negative? %>
             <tr class="hover:bg-container-hover">
-              <td class="px-4 py-2.5 whitespace-nowrap text-primary">
+              <td class="px-4 py-2.5 whitespace-nowrap text-primary sticky left-0 z-10 bg-container">
                 <%= I18n.l(entry.date, format: :default) %>
                 <% if log_extra["executed_time"].present? %>
                   <span class="text-secondary"><%= log_extra["executed_time"] %></span>
@@ -48,6 +49,7 @@
               <td class="px-4 py-2.5 whitespace-nowrap text-right text-secondary privacy-sensitive"><%= log_extra["take_profit"].present? ? format_money(Money.new(log_extra["take_profit"].to_d, trade.currency)) : "—" %></td>
               <td class="px-4 py-2.5 whitespace-nowrap text-right text-secondary privacy-sensitive"><%= trade.fee.to_d.zero? ? "—" : trade.fee.to_d.to_s("F").sub(/\.?0+\z/, "") %></td>
               <td class="px-4 py-2.5 whitespace-nowrap text-right text-primary privacy-sensitive"><%= format_money(Money.new(-entry.amount, entry.currency)) %></td>
+              <td class="px-4 py-2.5 text-secondary max-w-48 truncate" title="<%= entry.notes %>"><%= entry.notes.presence || "—" %></td>
             </tr>
           <% end %>
         </tbody>

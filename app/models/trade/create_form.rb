@@ -3,7 +3,7 @@ class Trade::CreateForm
 
   attr_accessor :account, :account_id, :date, :amount, :currency, :qty,
                 :price, :fee, :ticker, :manual_ticker, :type, :transfer_account_id,
-                :stop_loss_price, :take_profit_price, :executed_time
+                :stop_loss_price, :take_profit_price, :executed_time, :notes
 
   # Either creates a trade, transaction, or transfer based on type
   # Returns the model, regardless of success or failure
@@ -63,6 +63,7 @@ class Trade::CreateForm
 
       trade_entry = account.entries.new(
         name: Trade.build_name(type, qty, sec.ticker),
+        notes: notes.presence,
         date: date,
         amount: signed_amount,
         currency: currency,

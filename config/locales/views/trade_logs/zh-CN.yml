@@ -9,6 +9,11 @@ zh-CN:
       tab_closed: 平仓复盘
     closed:
       empty: 还没有已平仓的记录。当某标的持仓清零后，整笔投资会自动出现在这里。
+      col_avg_buy: 成本均价
+      col_avg_sell: 平仓均价
+      col_review: 复盘
+      review_placeholder: 复盘心得…
+      review_save: 保存
       col_period: 起止日期
       col_account: 账户
       col_security: 标的
@@ -30,11 +35,15 @@ zh-CN:
       col_account: 账户
       col_qty: 持仓量
       col_avg_cost: 成本均价
+      col_position_avg: 持仓均价
       col_price: 现价
-      col_stop_loss: 止损价
-      col_take_profit: 止盈价
+      col_stop_loss: 止损均价
+      col_take_profit: 止盈均价
       col_market_value: 市值
       col_unrealized: 浮盈/亏
+      col_weight: 总仓占比
+      col_opened_on: 开仓日
+      col_total_fees: 合计手续费
       col_converted: 折算(%{currency})
     log:
       empty: 还没有任何买卖记录，点击「录入操作」添加第一笔。
@@ -48,7 +57,11 @@ zh-CN:
       col_take_profit: 止盈价
       col_fee: 手续费
       col_amount: 金额
+      col_notes: 备注
       side_buy: 买入
       side_sell: 卖出
       side_dividend: 股息
       side_interest: 利息
+  closed_positions:
+    update:
+      success: 复盘备注已保存。

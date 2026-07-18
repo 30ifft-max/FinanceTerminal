@@ -8,6 +8,14 @@ class ClosedPosition < ApplicationRecord
 
   scope :reverse_chronological, -> { order(closed_on: :desc, created_at: :desc) }
 
+  def avg_buy_price
+    total_qty.positive? ? total_invested / total_qty : nil
+  end
+
+  def avg_sell_price
+    total_qty.positive? ? total_proceeds / total_qty : nil
+  end
+
   class << self
     def rebuild_for!(account, security)
       trades = account.trades
@@ -31,13 +39,20 @@ class ClosedPosition < ApplicationRecord
       end
 
       transaction do
+        # Preserve user-entered review notes across the rebuild, keyed by the
+        # segment's date range (stable unless the underlying trades change).
+        existing_notes = where(account: account, security: security)
+          .where.not(notes: nil)
+          .pluck(:opened_on, :closed_on, :notes)
+          .to_h { |opened, closed, notes| [ [ opened, closed ], notes ] }
+
         where(account: account, security: security).delete_all
-        segments.each { |segment| create_from_segment!(account, security, segment) }
+        segments.each { |segment| create_from_segment!(account, security, segment, existing_notes) }
       end
     end
 
     private
-      def create_from_segment!(account, security, segment)
+      def create_from_segment!(account, security, segment, existing_notes = {})
         buys = segment.select { |t| t.qty.positive? }
         sells = segment.select { |t| t.qty.negative? }
         invested = buys.sum { |t| t.qty * t.price }
@@ -60,7 +75,8 @@ class ClosedPosition < ApplicationRecord
           total_fees: fees,
           net_profit: net,
           return_pct: invested.positive? ? (net / invested * 100).round(4) : nil,
-          holding_days: (closed_on - opened_on).to_i
+          holding_days: (closed_on - opened_on).to_i,
+          notes: existing_notes[[ opened_on, closed_on ]]
         )
       end
   end
