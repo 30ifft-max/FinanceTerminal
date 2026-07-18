@@ -96,6 +96,81 @@
     </div>
   </div>
 
+  <%# F. Trade performance statistics (per-sell basis) %>
+  <div class="bg-container rounded-xl border border-alpha-black-25 shadow-border-xs p-4">
+    <h2 class="text-sm font-medium text-primary mb-4"><%= t(".performance_title") %></h2>
+    <% if @performance.sells.empty? %>
+      <p class="text-sm text-secondary py-6 text-center"><%= t(".performance_empty") %></p>
+    <% else %>
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <% money_tile = ->(value, colored: true) {
+             value.nil? ? [ "—", "text-primary" ] : [ format_money(value), colored ? (value.amount.negative? ? "text-destructive" : "text-success") : "text-primary" ]
+           } %>
+        <% [
+          [ t(".stat_trades"), @performance.sells.size.to_s, "text-primary" ],
+          [ t(".stat_win_rate"), @performance.win_rate ? number_to_percentage(@performance.win_rate, precision: 1) : "—", "text-primary" ],
+          [ t(".stat_avg_win"), *money_tile.call(@performance.avg_win, colored: false) ],
+          [ t(".stat_avg_loss"), *money_tile.call(@performance.avg_loss, colored: false) ],
+          [ t(".stat_payoff_ratio"), @performance.payoff_ratio&.to_s || "—", "text-primary" ],
+          [ t(".stat_profit_factor"), @performance.profit_factor&.to_s || "—", "text-primary" ],
+          [ t(".stat_expectancy"), *money_tile.call(@performance.expectancy) ],
+          [ t(".stat_kelly"), @performance.kelly ? number_to_percentage(@performance.kelly, precision: 1) : "—", "text-primary" ],
+          [ t(".stat_max_win"), *money_tile.call(@performance.max_win) ],
+          [ t(".stat_max_loss"), *money_tile.call(@performance.max_loss) ],
+          [ t(".stat_max_streak_wins"), @performance.max_consecutive_wins.to_s, "text-primary" ],
+          [ t(".stat_max_streak_losses"), @performance.max_consecutive_losses.to_s, "text-primary" ],
+          [ t(".stat_total_fees"), *money_tile.call(@performance.total_fees, colored: false) ],
+          [ t(".stat_fee_ratio"), @performance.fee_ratio ? number_to_percentage(@performance.fee_ratio, precision: 1) : "—", "text-primary" ],
+        ].each do |label, value, color| %>
+          <div>
+            <p class="text-xs uppercase text-secondary font-medium"><%= label %></p>
+            <p class="text-lg font-medium mt-0.5 privacy-sensitive <%= color %>"><%= value %></p>
+          </div>
+        <% end %>
+      </div>
+
+      <% by_ticker = @performance.realized_by_ticker %>
+      <% if by_ticker.any? %>
+        <h3 class="text-xs uppercase text-secondary font-medium mt-6 mb-2"><%= t(".by_ticker_title") %></h3>
+        <% max_abs_pnl = by_ticker.map { |_, m| m.amount.abs }.max %>
+        <ul class="space-y-1.5">
+          <% by_ticker.first(10).each do |ticker, money| %>
+            <li class="flex items-center gap-3 text-sm">
+              <span class="text-primary font-medium w-20 shrink-0 truncate"><%= ticker %></span>
+              <div class="grow h-2.5 flex items-center">
+                <div class="h-2.5 rounded-sm <%= money.amount.negative? ? "bg-destructive" : "bg-success" %>"
+                  style="width: <%= max_abs_pnl.positive? ? (money.amount.abs / max_abs_pnl * 100).round(1) : 0 %>%; min-width: 2px;"></div>
+              </div>
+              <span class="w-28 text-right shrink-0 privacy-sensitive <%= money.amount.negative? ? "text-destructive" : "text-success" %>">
+                <%= format_money(money) %>
+              </span>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+    <% end %>
+  </div>
+
+  <%# G. Risk management %>
+  <div class="bg-container rounded-xl border border-alpha-black-25 shadow-border-xs p-4">
+    <h2 class="text-sm font-medium text-primary mb-4"><%= t(".risk_title") %></h2>
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <% [
+        [ t(".stat_preset_coverage"), @performance.preset_coverage ? number_to_percentage(@performance.preset_coverage, precision: 1) : "—" ],
+        [ t(".stat_avg_risk_reward"), @performance.avg_risk_reward&.to_s || "—" ],
+        [ t(".stat_expected_r"), @performance.expected_r ? "#{@performance.expected_r}R" : "—" ],
+        [ t(".stat_open_risk"), @performance.open_risk_exposure ? format_money(@performance.open_risk_exposure) : "—" ],
+        [ t(".stat_risk_pct"), @performance.risk_exposure_pct ? number_to_percentage(@performance.risk_exposure_pct, precision: 2) : "—" ],
+      ].each do |label, value| %>
+        <div>
+          <p class="text-xs uppercase text-secondary font-medium"><%= label %></p>
+          <p class="text-lg font-medium mt-0.5 text-primary privacy-sensitive"><%= value %></p>
+        </div>
+      <% end %>
+    </div>
+    <p class="text-xs text-secondary mt-3"><%= t(".risk_hint") %></p>
+  </div>
+
   <%# Recent closed positions %>
   <div class="bg-container rounded-xl border border-alpha-black-25 shadow-border-xs p-4">
     <div class="flex items-center justify-between mb-4">

@@ -15,6 +15,30 @@ en:
       allocation_empty: No open positions to chart.
       monthly_title: Monthly realized P/L (%{currency})
       monthly_empty: No realized profits in the last 12 months.
+      performance_title: Trade performance (per sell)
+      performance_empty: No sell trades recorded yet.
+      stat_trades: Sell trades
+      stat_win_rate: Win rate
+      stat_avg_win: Avg win
+      stat_avg_loss: Avg loss
+      stat_payoff_ratio: Payoff ratio
+      stat_profit_factor: Profit factor
+      stat_expectancy: Expectancy
+      stat_kelly: Kelly %
+      stat_max_win: Max win
+      stat_max_loss: Max loss
+      stat_max_streak_wins: Max win streak
+      stat_max_streak_losses: Max loss streak
+      stat_total_fees: Total fees
+      stat_fee_ratio: Fees / gross win
+      by_ticker_title: Realized P/L by security
+      risk_title: Risk management
+      stat_preset_coverage: Stop-loss coverage
+      stat_avg_risk_reward: Avg risk/reward
+      stat_expected_r: Expected R
+      stat_open_risk: Open risk (1R)
+      stat_risk_pct: Risk / net worth
+      risk_hint: "1R = (entry − stop-loss) × qty per position. Expected R averages each round trip's net profit over its initial risk."
       recent_closed_title: Recent closed positions
       recent_closed_empty: No closed positions yet.
       view_all_closed: View all

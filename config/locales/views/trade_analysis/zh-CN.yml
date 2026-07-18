@@ -14,6 +14,30 @@ zh-CN:
       allocation_empty: 当前没有持仓，无法绘制分布图。
       monthly_title: 每月已实现盈亏（%{currency}）
       monthly_empty: 近 12 个月没有已实现盈亏。
+      performance_title: 交易绩效统计（按每笔卖出）
+      performance_empty: 还没有卖出记录。
+      stat_trades: 卖出笔数
+      stat_win_rate: 胜率
+      stat_avg_win: 平均盈利
+      stat_avg_loss: 平均亏损
+      stat_payoff_ratio: 盈亏比
+      stat_profit_factor: 盈利因子
+      stat_expectancy: 期望值
+      stat_kelly: 凯利比例
+      stat_max_win: 最大单笔盈利
+      stat_max_loss: 最大单笔亏损
+      stat_max_streak_wins: 最大连胜
+      stat_max_streak_losses: 最大连亏
+      stat_total_fees: 累计手续费
+      stat_fee_ratio: 费用占盈利比
+      by_ticker_title: 分品种已实现盈亏
+      risk_title: 风险管理
+      stat_preset_coverage: 止损预设覆盖率
+      stat_avg_risk_reward: 平均风险报酬比
+      stat_expected_r: 期望 R
+      stat_open_risk: 组合风险敞口(1R)
+      stat_risk_pct: 敞口占净资产
+      risk_hint: 1R =（开仓价 − 预设止损价）× 成交量。期望 R 为各平仓轮次净利与初始风险之比的平均值。
       recent_closed_title: 最近平仓
       recent_closed_empty: 还没有已平仓的记录。
       view_all_closed: 查看全部
