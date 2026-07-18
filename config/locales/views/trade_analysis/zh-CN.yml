@@ -1,0 +1,19 @@
+---
+zh-CN:
+  trade_analysis:
+    show:
+      title: 分析
+      realized_total: 已实现盈亏
+      win_rate: 胜率
+      profit_factor: 盈亏比
+      avg_holding_days: 平均持有
+      days:
+        other: "%{count} 天"
+      allocation_title: 持仓分布
+      allocation_total: 总计
+      allocation_empty: 当前没有持仓，无法绘制分布图。
+      monthly_title: 每月已实现盈亏（%{currency}）
+      monthly_empty: 近 12 个月没有已实现盈亏。
+      recent_closed_title: 最近平仓
+      recent_closed_empty: 还没有已平仓的记录。
+      view_all_closed: 查看全部

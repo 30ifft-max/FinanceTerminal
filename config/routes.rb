@@ -263,6 +263,7 @@ Rails.application.routes.draw do
   end
 
   resources :trade_logs, only: :index
+  resource :trade_analysis, controller: :trade_analysis, only: :show
 
   namespace :settings do
     resource :profile, only: [ :show, :destroy ]

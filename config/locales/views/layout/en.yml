@@ -14,6 +14,7 @@ en:
         goals: Goals
         transactions: Transactions
         trade_logs: Trades
+        trade_analysis: Analysis
     auth:
       existing_account: Already have an account?
       no_account: New to %{product_name}?

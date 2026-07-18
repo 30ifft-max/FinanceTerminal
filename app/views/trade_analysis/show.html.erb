@@ -1,0 +1,126 @@
+<%= content_for :page_title, t(".title") %>
+
+<% segments = @analysis.allocation_segments %>
+<% monthly = @analysis.monthly_realized %>
+<% max_abs = monthly.map { |_, v| v.abs }.max %>
+
+<div class="space-y-4 pb-6 lg:pb-12">
+  <header class="flex justify-between items-center text-primary font-medium">
+    <h1 class="text-xl"><%= t(".title") %></h1>
+  </header>
+
+  <%# Realized performance stat cards %>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="bg-container rounded-xl border border-alpha-black-25 shadow-border-xs p-4">
+      <p class="text-xs uppercase text-secondary font-medium"><%= t(".realized_total") %></p>
+      <% total = @analysis.realized_total %>
+      <p class="text-xl font-medium mt-1 privacy-sensitive <%= total.nil? ? "text-primary" : (total.amount.negative? ? "text-destructive" : "text-success") %>">
+        <%= total ? format_money(total) : "—" %>
+      </p>
+    </div>
+    <div class="bg-container rounded-xl border border-alpha-black-25 shadow-border-xs p-4">
+      <p class="text-xs uppercase text-secondary font-medium"><%= t(".win_rate") %></p>
+      <p class="text-xl font-medium text-primary mt-1 privacy-sensitive">
+        <%= @analysis.win_rate ? number_to_percentage(@analysis.win_rate, precision: 1) : "—" %>
+      </p>
+    </div>
+    <div class="bg-container rounded-xl border border-alpha-black-25 shadow-border-xs p-4">
+      <p class="text-xs uppercase text-secondary font-medium"><%= t(".profit_factor") %></p>
+      <p class="text-xl font-medium text-primary mt-1 privacy-sensitive"><%= @analysis.profit_factor || "—" %></p>
+    </div>
+    <div class="bg-container rounded-xl border border-alpha-black-25 shadow-border-xs p-4">
+      <p class="text-xs uppercase text-secondary font-medium"><%= t(".avg_holding_days") %></p>
+      <p class="text-xl font-medium text-primary mt-1">
+        <%= @analysis.avg_holding_days ? t(".days", count: @analysis.avg_holding_days) : "—" %>
+      </p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <%# Allocation donut %>
+    <div class="bg-container rounded-xl border border-alpha-black-25 shadow-border-xs p-4">
+      <h2 class="text-sm font-medium text-primary mb-4"><%= t(".allocation_title") %></h2>
+      <% if segments.empty? %>
+        <p class="text-sm text-secondary py-12 text-center"><%= t(".allocation_empty") %></p>
+      <% else %>
+        <div class="flex flex-col sm:flex-row items-center gap-6">
+          <div class="h-[240px] w-[240px] relative shrink-0"
+            data-controller="donut-chart"
+            data-donut-chart-segments-value="<%= segments.to_json %>"
+            data-donut-chart-segment-opacity-value="0.9">
+            <div data-donut-chart-target="chartContainer" class="absolute inset-0 pointer-events-none"></div>
+            <div data-donut-chart-target="contentContainer" class="flex justify-center items-center h-full">
+              <div data-donut-chart-target="defaultContent" class="flex flex-col items-center">
+                <span class="text-secondary text-xs"><%= t(".allocation_total") %></span>
+                <span data-donut-chart-target="amount" class="text-lg font-medium text-primary privacy-sensitive whitespace-nowrap">
+                  <%= @analysis.holdings_view.total_market_value ? format_money(@analysis.holdings_view.total_market_value) : "—" %>
+                </span>
+              </div>
+            </div>
+          </div>
+          <ul class="space-y-1.5 w-full min-w-0">
+            <% total_alloc = segments.sum { |s| s[:amount] } %>
+            <% segments.first(10).each do |segment| %>
+              <li class="flex items-center gap-2 text-sm">
+                <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: <%= segment[:color] %>;"></span>
+                <span class="text-primary font-medium truncate"><%= segment[:name] %></span>
+                <span class="text-secondary ml-auto privacy-sensitive"><%= number_to_percentage(segment[:amount] / total_alloc * 100, precision: 1) %></span>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+    </div>
+
+    <%# Monthly realized profit bars %>
+    <div class="bg-container rounded-xl border border-alpha-black-25 shadow-border-xs p-4">
+      <h2 class="text-sm font-medium text-primary mb-4"><%= t(".monthly_title", currency: Current.family.currency) %></h2>
+      <% if max_abs.nil? || max_abs.zero? %>
+        <p class="text-sm text-secondary py-12 text-center"><%= t(".monthly_empty") %></p>
+      <% else %>
+        <ul class="space-y-2">
+          <% monthly.each do |month, value| %>
+            <li class="flex items-center gap-3 text-sm">
+              <span class="text-secondary w-16 shrink-0"><%= I18n.l(month, format: "%Y-%m") %></span>
+              <div class="grow h-3 flex items-center">
+                <div class="h-3 rounded-sm <%= value.negative? ? "bg-destructive" : "bg-success" %>"
+                  style="width: <%= (value.abs / max_abs * 100).round(1) %>%; min-width: <%= value.zero? ? 0 : 2 %>px;"></div>
+              </div>
+              <span class="w-28 text-right shrink-0 privacy-sensitive <%= value.negative? ? "text-destructive" : (value.zero? ? "text-secondary" : "text-success") %>">
+                <%= value.zero? ? "—" : format_money(Money.new(value, Current.family.currency)) %>
+              </span>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+    </div>
+  </div>
+
+  <%# Recent closed positions %>
+  <div class="bg-container rounded-xl border border-alpha-black-25 shadow-border-xs p-4">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-sm font-medium text-primary"><%= t(".recent_closed_title") %></h2>
+      <%= link_to t(".view_all_closed"), trade_logs_path(tab: "closed"), class: "text-sm text-link hover:underline" %>
+    </div>
+    <% recent = @analysis.closed_positions.first(5) %>
+    <% if recent.empty? %>
+      <p class="text-sm text-secondary py-6 text-center"><%= t(".recent_closed_empty") %></p>
+    <% else %>
+      <ul class="divide-y divide-alpha-black-50">
+        <% recent.each do |position| %>
+          <li class="flex items-center gap-4 py-2.5 text-sm">
+            <span class="font-medium text-primary w-20 shrink-0"><%= position.security.ticker %></span>
+            <span class="text-secondary truncate"><%= position.account.name %></span>
+            <span class="text-secondary ml-auto shrink-0"><%= I18n.l(position.closed_on, format: :default) %></span>
+            <span class="w-28 text-right shrink-0 privacy-sensitive <%= position.net_profit.negative? ? "text-destructive" : "text-success" %>">
+              <%= format_money(Money.new(position.net_profit, position.currency)) %>
+            </span>
+            <span class="w-20 text-right shrink-0 privacy-sensitive <%= position.return_pct&.negative? ? "text-destructive" : "text-success" %>">
+              <%= position.return_pct ? number_to_percentage(position.return_pct, precision: 1) : "—" %>
+            </span>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </div>
+</div>
