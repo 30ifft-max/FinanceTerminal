@@ -7,7 +7,21 @@ en:
       tab_log: Trade log
       tab_holdings: Holdings
       tab_closed: Closed positions
-      closed_coming_soon: Closed-position review is coming in a later stage.
+    closed:
+      empty: No closed positions yet. When a security's holding returns to zero, its full round-trip appears here.
+      col_period: Period
+      col_account: Account
+      col_security: Security
+      col_qty: Total bought
+      col_invested: Invested
+      col_proceeds: Proceeds
+      col_fees: Fees
+      col_net_profit: Net profit
+      col_return_pct: Return
+      col_holding_days: Held
+      days:
+        one: "%{count} day"
+        other: "%{count} days"
     holdings:
       total_market_value: Total market value
       total_unrealized: Total unrealized G/L

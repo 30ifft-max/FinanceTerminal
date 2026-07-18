@@ -80,6 +80,7 @@ class Trade::CreateForm
       if trade_entry.save
         trade_entry.lock_saved_attributes!
         account.sync_later
+        ClosedPosition.rebuild_for!(account, sec)
       end
 
       trade_entry

@@ -19,6 +19,12 @@ class TradeLogsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, holdings(:one).ticker
   end
 
+  test "shows closed positions tab" do
+    get trade_logs_url(tab: "closed")
+
+    assert_response :success
+  end
+
   test "falls back to log tab for unknown tab param" do
     get trade_logs_url(tab: "bogus")
 

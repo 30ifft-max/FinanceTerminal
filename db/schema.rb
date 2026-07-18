@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_18_090000) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_18_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -406,6 +406,26 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_18_090000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_chats_on_user_id"
+  end
+
+  create_table "closed_positions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "account_id", null: false
+    t.uuid "security_id", null: false
+    t.date "opened_on", null: false
+    t.date "closed_on", null: false
+    t.decimal "total_qty", precision: 24, scale: 8, null: false
+    t.decimal "total_invested", precision: 19, scale: 8, null: false
+    t.decimal "total_proceeds", precision: 19, scale: 8, null: false
+    t.decimal "total_fees", precision: 19, scale: 8, default: "0.0", null: false
+    t.decimal "net_profit", precision: 19, scale: 8, null: false
+    t.decimal "return_pct", precision: 10, scale: 4
+    t.integer "holding_days", null: false
+    t.string "currency", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "security_id", "closed_on"], name: "idx_on_account_id_security_id_closed_on_eda8a5de1d"
+    t.index ["account_id"], name: "index_closed_positions_on_account_id"
+    t.index ["security_id"], name: "index_closed_positions_on_security_id"
   end
 
   create_table "coinbase_accounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -2178,6 +2198,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_18_090000) do
   add_foreign_key "budgets", "families"
   add_foreign_key "categories", "families"
   add_foreign_key "chats", "users"
+  add_foreign_key "closed_positions", "accounts", on_delete: :cascade
+  add_foreign_key "closed_positions", "securities"
   add_foreign_key "coinbase_accounts", "coinbase_items"
   add_foreign_key "coinbase_items", "families"
   add_foreign_key "coinstats_accounts", "coinstats_items"
