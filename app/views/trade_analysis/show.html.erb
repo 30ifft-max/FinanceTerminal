@@ -96,6 +96,33 @@
     </div>
   </div>
 
+  <%# D. Portfolio performance %>
+  <div class="bg-container rounded-xl border border-alpha-black-25 shadow-border-xs p-4">
+    <h2 class="text-sm font-medium text-primary mb-4"><%= t(".portfolio_title") %></h2>
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <% net_gain = @performance.portfolio_net_gain %>
+      <% return_pct = @performance.portfolio_return_pct %>
+      <% xirr = @performance.xirr %>
+      <% [
+        [ t(".stat_total_invested"), @performance.total_invested ? format_money(@performance.total_invested) : "—", "text-primary" ],
+        [ t(".stat_total_realized"), @performance.total_realized ? format_money(@performance.total_realized) : "—",
+          @performance.total_realized&.amount&.negative? ? "text-destructive" : "text-success" ],
+        [ t(".stat_net_gain"), net_gain ? format_money(net_gain) : "—",
+          net_gain&.amount&.negative? ? "text-destructive" : "text-success" ],
+        [ t(".stat_portfolio_return"), return_pct ? number_to_percentage(return_pct, precision: 2) : "—",
+          return_pct&.negative? ? "text-destructive" : "text-success" ],
+        [ t(".stat_xirr"), xirr ? number_to_percentage(xirr, precision: 2) : "—",
+          xirr&.negative? ? "text-destructive" : "text-success" ],
+      ].each do |label, value, color| %>
+        <div>
+          <p class="text-xs uppercase text-secondary font-medium"><%= label %></p>
+          <p class="text-lg font-medium mt-0.5 privacy-sensitive <%= color %>"><%= value %></p>
+        </div>
+      <% end %>
+    </div>
+    <p class="text-xs text-secondary mt-3"><%= t(".portfolio_hint") %></p>
+  </div>
+
   <%# F. Trade performance statistics (per-sell basis) %>
   <div class="bg-container rounded-xl border border-alpha-black-25 shadow-border-xs p-4">
     <h2 class="text-sm font-medium text-primary mb-4"><%= t(".performance_title") %></h2>

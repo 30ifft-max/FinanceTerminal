@@ -5,7 +5,7 @@ module TradeLog
   class HoldingsView
     Row = Struct.new(
       :holding, :account, :stop_loss, :take_profit, :converted_amount, :converted_trend_value,
-      :opened_on, :total_fees, :cost_avg, :position_avg,
+      :opened_on, :total_fees, :cost_avg, :position_avg, :realized, :invested,
       keyword_init: true
     )
 
@@ -29,6 +29,8 @@ module TradeLog
             total_fees: segment.sum { |t| t.fee.to_d },
             cost_avg: stats[:cost_avg],
             position_avg: stats[:position_avg],
+            realized: stats[:realized],
+            invested: stats[:invested],
             converted_amount: convert(holding.amount_money),
             converted_trend_value: holding.trend && convert(holding.trend.value)
           )
@@ -84,6 +86,7 @@ module TradeLog
         sl_sum = BigDecimal("0")
         tp_qty = BigDecimal("0")
         tp_sum = BigDecimal("0")
+        realized = BigDecimal("0")
 
         segment.each do |trade|
           price = trade.price.to_d
@@ -108,9 +111,10 @@ module TradeLog
           else
             qty = trade.qty.abs
             cost_avg = buy_qty.positive? ? buy_cost / buy_qty : BigDecimal("0")
-            realized = qty * (price - cost_avg) - fee
+            sell_pnl = qty * (price - cost_avg) - fee
+            realized += sell_pnl
             remaining = held_qty - qty
-            position_avg = remaining.positive? ? (cost_avg * held_qty - realized) / remaining : nil
+            position_avg = remaining.positive? ? (cost_avg * held_qty - sell_pnl) / remaining : nil
             held_qty = remaining
           end
         end
@@ -119,7 +123,9 @@ module TradeLog
           cost_avg: buy_qty.positive? ? buy_cost / buy_qty : nil,
           position_avg: position_avg,
           stop_loss_avg: sl_qty.positive? ? sl_sum / sl_qty : nil,
-          take_profit_avg: tp_qty.positive? ? tp_sum / tp_qty : nil
+          take_profit_avg: tp_qty.positive? ? tp_sum / tp_qty : nil,
+          realized: realized,
+          invested: buy_cost
         }
       end
 

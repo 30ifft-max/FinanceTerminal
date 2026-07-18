@@ -41,6 +41,8 @@ zh-CN:
       col_take_profit: 止盈均价
       col_market_value: 市值
       col_unrealized: 浮盈/亏
+      col_total_net: 总仓净收益
+      col_total_net_pct: 总仓净收益率
       col_weight: 总仓占比
       col_opened_on: 开仓日
       col_total_fees: 合计手续费

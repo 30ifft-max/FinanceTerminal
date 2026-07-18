@@ -163,6 +163,52 @@ module TradeLog
       @holdings_view ||= HoldingsView.new(family: family, user: user)
     end
 
+    # --- D. Portfolio performance ---
+
+    # 总投入本金：全部买入的含费成本，折算主货币
+    def total_invested
+      walk unless @walked
+      @total_invested_converted&.positive? ? Money.new(@total_invested_converted, family.currency) : nil
+    end
+
+    def total_realized
+      converted = sells.filter_map(&:converted)
+      return nil if converted.empty?
+
+      Money.new(converted.sum, family.currency)
+    end
+
+    # 组合总收益率 = (累计已实现 + 当前浮动盈亏) / 总投入本金
+    def portfolio_return_pct
+      invested = total_invested
+      return nil unless invested&.amount&.positive?
+
+      realized = total_realized&.amount || 0
+      unrealized = holdings_view.total_unrealized&.amount || 0
+      ((realized + unrealized) / invested.amount * 100).round(2)
+    end
+
+    def portfolio_net_gain
+      realized = total_realized&.amount
+      unrealized = holdings_view.total_unrealized&.amount
+      return nil if realized.nil? && unrealized.nil?
+
+      Money.new((realized || 0) + (unrealized || 0), family.currency)
+    end
+
+    # 资金加权收益率 XIRR（年化）：买入为负现金流、卖出为正、当前市值收尾
+    def xirr
+      walk unless @walked
+      flows = @cashflows.dup
+      market_value = holdings_view.total_market_value&.amount
+      flows << [ Date.current, market_value ] if market_value&.positive?
+      return nil if flows.size < 2 || flows.none? { |_, v| v.positive? } || flows.none? { |_, v| v.negative? }
+
+      rate = solve_xirr(flows)
+      rate && (rate * 100).round(2)
+    end
+
+
     private
       attr_reader :family, :user
 
@@ -185,6 +231,8 @@ module TradeLog
         @risk_rewards = []
         fees = BigDecimal("0")
         fees_convertible = true
+        invested = BigDecimal("0")
+        @cashflows = []
 
         accounts.each do |account|
           trades = account.trades
@@ -214,6 +262,14 @@ module TradeLog
                 buy_qty += trade.qty
                 buy_cost += trade.qty * price + fee
                 held += trade.qty
+                begin
+                  cost_converted = Money.new(trade.qty * price + fee, trade.currency)
+                    .exchange_to(family.currency, date: trade.entry.date).amount
+                  invested += cost_converted
+                  @cashflows << [ trade.entry.date, -cost_converted ]
+                rescue Money::ConversionError
+                  nil
+                end
                 presets = trade.extra&.dig("trade_log") || {}
                 stop = presets["stop_loss"].presence&.to_d
                 target = presets["take_profit"].presence&.to_d
@@ -231,6 +287,14 @@ module TradeLog
 
                 converted = begin
                   Money.new(realized, trade.currency).exchange_to(family.currency, date: trade.entry.date).amount
+                rescue Money::ConversionError
+                  nil
+                end
+
+                begin
+                  proceeds = Money.new(qty * price - fee, trade.currency)
+                    .exchange_to(family.currency, date: trade.entry.date).amount
+                  @cashflows << [ trade.entry.date, proceeds ]
                 rescue Money::ConversionError
                   nil
                 end
@@ -256,7 +320,33 @@ module TradeLog
 
         @sells.sort_by!(&:date)
         @total_fees_converted = fees_convertible || fees.positive? ? fees : nil
+        @total_invested_converted = invested
+        @cashflows.sort_by!(&:first)
         @walked = true
+      end
+
+      # Newton-Raphson with bisection fallback on the XIRR equation
+      # Σ amount / (1+r)^(days/365) = 0
+      def solve_xirr(flows)
+        t0 = flows.first.first
+        npv = ->(rate) {
+          flows.sum { |date, amount| amount.to_f / (1 + rate)**((date - t0).to_i / 365.0) }
+        }
+
+        low = -0.9999
+        high = 10.0
+        return nil if npv.call(low) * npv.call(high) > 0
+
+        60.times do
+          mid = (low + high) / 2
+          if npv.call(low) * npv.call(mid) <= 0
+            high = mid
+          else
+            low = mid
+          end
+        end
+
+        (low + high) / 2
       end
 
       def max_streak(predicate)

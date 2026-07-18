@@ -42,6 +42,8 @@ en:
       col_take_profit: Avg take-profit
       col_market_value: Market value
       col_unrealized: Unrealized G/L
+      col_total_net: Total net G/L
+      col_total_net_pct: Total net %
       col_weight: Weight
       col_opened_on: Opened
       col_total_fees: Fees

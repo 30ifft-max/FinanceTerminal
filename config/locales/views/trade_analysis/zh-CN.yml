@@ -14,6 +14,13 @@ zh-CN:
       allocation_empty: 当前没有持仓，无法绘制分布图。
       monthly_title: 每月已实现盈亏（%{currency}）
       monthly_empty: 近 12 个月没有已实现盈亏。
+      portfolio_title: 组合表现
+      stat_total_invested: 总投入本金
+      stat_total_realized: 已实现盈亏
+      stat_net_gain: 总仓净收益
+      stat_portfolio_return: 组合总收益率
+      stat_xirr: XIRR（年化）
+      portfolio_hint: 组合总收益率 =（已实现 + 浮动盈亏）÷ 总投入本金（含手续费）。XIRR 为全部买卖现金流加当前市值的资金加权年化收益率。
       performance_title: 交易绩效统计（按每笔卖出）
       performance_empty: 还没有卖出记录。
       stat_trades: 卖出笔数

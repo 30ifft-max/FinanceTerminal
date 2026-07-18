@@ -5,6 +5,7 @@ class TradeLog::PerformanceTest < ActiveSupport::TestCase
     @account = accounts(:investment)
     @security = securities(:aapl)
     @account.trades.each { |t| t.entry.destroy! }
+    Holding.where(account: @account.family.accounts).delete_all
     @performance = TradeLog::Performance.new(family: @account.family, user: users(:family_admin))
   end
 
@@ -30,6 +31,19 @@ class TradeLog::PerformanceTest < ActiveSupport::TestCase
     assert_in_delta 3.0, @performance.avg_risk_reward.to_f, 0.01
     # round trip: net 55 / 1R 100 = 0.55R
     assert_in_delta 0.55, @performance.expected_r.to_f, 0.01
+  end
+
+
+  test "portfolio metrics: invested, realized, xirr solvable" do
+    create_trade(qty: 10, price: 100, fee: 0, date: 365.days.ago.to_date)
+    create_trade(qty: -10, price: 110, fee: 0, date: Date.current)
+
+    # invested 1000; realized 10*(110-100) = 100
+    assert_in_delta 1000, @performance.total_invested.amount.to_f, 0.001
+    assert_in_delta 100, @performance.total_realized.amount.to_f, 0.001
+    assert_in_delta 10.0, @performance.portfolio_return_pct.to_f, 0.01
+    # single flow pair one year apart: XIRR ≈ 10%
+    assert_in_delta 10.0, @performance.xirr.to_f, 0.2
   end
 
   private

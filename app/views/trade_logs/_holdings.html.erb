@@ -44,6 +44,8 @@
               <th class="text-right font-medium px-4 py-2.5"><%= t(".col_take_profit") %></th>
               <th class="text-right font-medium px-4 py-2.5"><%= t(".col_market_value") %></th>
               <th class="text-right font-medium px-4 py-2.5"><%= t(".col_unrealized") %></th>
+              <th class="text-right font-medium px-4 py-2.5"><%= t(".col_total_net") %></th>
+              <th class="text-right font-medium px-4 py-2.5"><%= t(".col_total_net_pct") %></th>
               <th class="text-right font-medium px-4 py-2.5"><%= t(".col_weight") %></th>
               <th class="text-right font-medium px-4 py-2.5"><%= t(".col_opened_on") %></th>
               <th class="text-right font-medium px-4 py-2.5"><%= t(".col_total_fees") %></th>
@@ -76,6 +78,13 @@
                   <% else %>
                     <span class="text-secondary">—</span>
                   <% end %>
+                </td>
+                <% total_net = row.realized && holding.trend ? row.realized + holding.trend.value.amount : nil %>
+                <td class="px-4 py-2.5 whitespace-nowrap text-right privacy-sensitive <%= total_net.nil? ? "text-secondary" : (total_net.negative? ? "text-destructive" : "text-success") %>">
+                  <%= total_net ? format_money(Money.new(total_net, holding.currency)) : "—" %>
+                </td>
+                <td class="px-4 py-2.5 whitespace-nowrap text-right privacy-sensitive <%= total_net.nil? ? "text-secondary" : (total_net.negative? ? "text-destructive" : "text-success") %>">
+                  <%= (total_net && row.invested&.positive?) ? number_to_percentage(total_net / row.invested * 100, precision: 2) : "—" %>
                 </td>
                 <td class="px-4 py-2.5 whitespace-nowrap text-right text-secondary privacy-sensitive">
                   <% total_value = holdings_view.total_market_value %>
