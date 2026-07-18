@@ -15,7 +15,7 @@ class TradesController < ApplicationController
 
   # Can create a trade, transaction (e.g. "fees"), or transfer (e.g. "withdrawal")
   def create
-    @account = accessible_accounts.find(params[:account_id])
+    @account = accessible_accounts.find(params[:account_id].presence || params.dig(:model, :account_id))
 
     return unless require_account_permission!(@account)
 
@@ -100,7 +100,8 @@ class TradesController < ApplicationController
 
     def create_params
       params.require(:model).permit(
-        :date, :amount, :currency, :qty, :price, :fee, :ticker, :manual_ticker, :type, :transfer_account_id
+        :date, :amount, :currency, :qty, :price, :fee, :ticker, :manual_ticker, :type, :transfer_account_id,
+        :account_id, :stop_loss_price, :take_profit_price, :executed_time
       )
     end
 

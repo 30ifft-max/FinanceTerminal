@@ -1,0 +1,60 @@
+<%# locals: (entries:, pagy:) %>
+
+<div class="bg-container rounded-xl border border-alpha-black-25 shadow-border-xs">
+  <% if entries.empty? %>
+    <div class="p-8 text-center text-sm text-secondary"><%= t(".empty") %></div>
+  <% else %>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-xs uppercase text-secondary border-b border-alpha-black-50">
+            <th class="text-left font-medium px-4 py-2.5"><%= t(".col_datetime") %></th>
+            <th class="text-left font-medium px-4 py-2.5"><%= t(".col_account") %></th>
+            <th class="text-left font-medium px-4 py-2.5"><%= t(".col_security") %></th>
+            <th class="text-left font-medium px-4 py-2.5"><%= t(".col_side") %></th>
+            <th class="text-right font-medium px-4 py-2.5"><%= t(".col_qty") %></th>
+            <th class="text-right font-medium px-4 py-2.5"><%= t(".col_price") %></th>
+            <th class="text-right font-medium px-4 py-2.5"><%= t(".col_stop_loss") %></th>
+            <th class="text-right font-medium px-4 py-2.5"><%= t(".col_take_profit") %></th>
+            <th class="text-right font-medium px-4 py-2.5"><%= t(".col_fee") %></th>
+            <th class="text-right font-medium px-4 py-2.5"><%= t(".col_amount") %></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-alpha-black-50">
+          <% entries.each do |entry| %>
+            <% trade = entry.entryable %>
+            <% log_extra = (trade.extra || {})["trade_log"] || {} %>
+            <% is_sell = trade.qty.negative? %>
+            <tr class="hover:bg-container-hover">
+              <td class="px-4 py-2.5 whitespace-nowrap text-primary">
+                <%= I18n.l(entry.date, format: :default) %>
+                <% if log_extra["executed_time"].present? %>
+                  <span class="text-secondary"><%= log_extra["executed_time"] %></span>
+                <% end %>
+              </td>
+              <td class="px-4 py-2.5 whitespace-nowrap text-secondary"><%= entry.account.name %></td>
+              <td class="px-4 py-2.5 whitespace-nowrap font-medium text-primary">
+                <%= link_to trade.security&.ticker || entry.name, trade_path(trade), data: { turbo_frame: :modal }, class: "hover:underline" %>
+              </td>
+              <td class="px-4 py-2.5 whitespace-nowrap">
+                <% label = trade.investment_activity_label.presence || (is_sell ? "Sell" : "Buy") %>
+                <span class="<%= label == "Sell" ? "text-destructive" : (label == "Buy" ? "text-success" : "text-secondary") %>">
+                  <%= t(".side_#{label.downcase}", default: label) %>
+                </span>
+              </td>
+              <td class="px-4 py-2.5 whitespace-nowrap text-right text-primary privacy-sensitive"><%= trade.qty.abs.to_s("F").sub(/\.?0+\z/, "") %></td>
+              <td class="px-4 py-2.5 whitespace-nowrap text-right text-primary privacy-sensitive"><%= trade.price.zero? ? "—" : format_money(Money.new(trade.price, trade.currency)) %></td>
+              <td class="px-4 py-2.5 whitespace-nowrap text-right text-secondary privacy-sensitive"><%= log_extra["stop_loss"].present? ? format_money(Money.new(log_extra["stop_loss"].to_d, trade.currency)) : "—" %></td>
+              <td class="px-4 py-2.5 whitespace-nowrap text-right text-secondary privacy-sensitive"><%= log_extra["take_profit"].present? ? format_money(Money.new(log_extra["take_profit"].to_d, trade.currency)) : "—" %></td>
+              <td class="px-4 py-2.5 whitespace-nowrap text-right text-secondary privacy-sensitive"><%= trade.fee.to_d.zero? ? "—" : trade.fee.to_d.to_s("F").sub(/\.?0+\z/, "") %></td>
+              <td class="px-4 py-2.5 whitespace-nowrap text-right text-primary privacy-sensitive"><%= format_money(Money.new(-entry.amount, entry.currency)) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <div class="p-4 border-t border-alpha-black-50">
+      <%= render "shared/pagination", pagy: pagy, per_page_options: [ "30", "50", "200" ] %>
+    </div>
+  <% end %>
+</div>

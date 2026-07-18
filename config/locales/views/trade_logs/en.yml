@@ -1,0 +1,27 @@
+---
+en:
+  trade_logs:
+    index:
+      title: Trades
+      new_trade: Log trade
+      tab_log: Trade log
+      tab_holdings: Holdings
+      tab_closed: Closed positions
+      holdings_coming_soon: Holdings view is coming in the next stage.
+      closed_coming_soon: Closed-position review is coming in a later stage.
+    log:
+      empty: No trades logged yet. Use "Log trade" to record your first one.
+      col_datetime: Date
+      col_account: Account
+      col_security: Security
+      col_side: Side
+      col_qty: Quantity
+      col_price: Price
+      col_stop_loss: Stop-loss
+      col_take_profit: Take-profit
+      col_fee: Fee
+      col_amount: Amount
+      side_buy: Buy
+      side_sell: Sell
+      side_dividend: Dividend
+      side_interest: Interest

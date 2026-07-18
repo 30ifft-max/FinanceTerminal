@@ -262,6 +262,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :trade_logs, only: :index
+
   namespace :settings do
     resource :profile, only: [ :show, :destroy ]
     resource :preferences, only: %i[show update]

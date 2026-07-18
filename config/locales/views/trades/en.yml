@@ -3,6 +3,10 @@ en:
   trades:
     form:
       account: Transfer account (optional)
+      trade_account: Investment account
+      executed_time: Execution time (optional)
+      stop_loss_price: Stop-loss price (optional)
+      take_profit_price: Take-profit price (optional)
       account_prompt: Search account
       amount: Amount
       fee: Transaction fee

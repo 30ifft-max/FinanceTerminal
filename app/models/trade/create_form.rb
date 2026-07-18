@@ -1,8 +1,9 @@
 class Trade::CreateForm
   include ActiveModel::Model
 
-  attr_accessor :account, :date, :amount, :currency, :qty,
-                :price, :fee, :ticker, :manual_ticker, :type, :transfer_account_id
+  attr_accessor :account, :account_id, :date, :amount, :currency, :qty,
+                :price, :fee, :ticker, :manual_ticker, :type, :transfer_account_id,
+                :stop_loss_price, :take_profit_price, :executed_time
 
   # Either creates a trade, transaction, or transfer based on type
   # Returns the model, regardless of success or failure
@@ -32,6 +33,18 @@ class Trade::CreateForm
       ).resolve
     end
 
+    # Trade-log metadata (stop-loss / take-profit presets, intraday execution
+    # time) lives under extra["trade_log"] so no schema change is needed.
+    def trade_log_extra
+      log = {
+        "stop_loss" => stop_loss_price.presence,
+        "take_profit" => take_profit_price.presence,
+        "executed_time" => executed_time.presence
+      }.compact
+
+      log.present? ? { "trade_log" => log } : {}
+    end
+
     def ticker_present?
       ticker.present? || manual_ticker.present?
     end
@@ -59,7 +72,8 @@ class Trade::CreateForm
           fee: fee.to_d,
           currency: currency,
           security: sec,
-          investment_activity_label: type.capitalize # "buy" → "Buy", "sell" → "Sell"
+          investment_activity_label: type.capitalize, # "buy" → "Buy", "sell" → "Sell"
+          extra: trade_log_extra
         )
       )
 

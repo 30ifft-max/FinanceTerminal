@@ -1,0 +1,27 @@
+---
+zh-CN:
+  trade_logs:
+    index:
+      title: 买卖
+      new_trade: 录入操作
+      tab_log: 操作日志
+      tab_holdings: 现有持仓
+      tab_closed: 平仓复盘
+      holdings_coming_soon: 现有持仓视图将在下一阶段提供。
+      closed_coming_soon: 平仓复盘将在后续阶段提供。
+    log:
+      empty: 还没有任何买卖记录，点击「录入操作」添加第一笔。
+      col_datetime: 日期
+      col_account: 账户
+      col_security: 标的
+      col_side: 方向
+      col_qty: 成交量
+      col_price: 成交价
+      col_stop_loss: 止损价
+      col_take_profit: 止盈价
+      col_fee: 手续费
+      col_amount: 金额
+      side_buy: 买入
+      side_sell: 卖出
+      side_dividend: 股息
+      side_interest: 利息

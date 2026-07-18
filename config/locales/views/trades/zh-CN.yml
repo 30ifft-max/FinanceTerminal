@@ -3,6 +3,10 @@ zh-CN:
   trades:
     form:
       account: 转账账户（可选）
+      trade_account: 投资账户
+      executed_time: 成交时间（可选）
+      stop_loss_price: 预设止损价（可选）
+      take_profit_price: 预设止盈价（可选）
       account_prompt: 搜索账户
       amount: 金额
       fee: 交易手续费

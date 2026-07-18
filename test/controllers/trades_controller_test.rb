@@ -410,4 +410,31 @@ class TradesControllerTest < ActionDispatch::IntegrationTest
     assert @entry.trade.locked_attributes.key?("investment_activity_label"), "investment_activity_label should be locked"
     assert @entry.protected_from_sync?, "Entry should be protected from sync"
   end
+
+  test "creates trade with trade-log metadata and in-form account" do
+    assert_difference [ "Entry.count", "Trade.count" ], 1 do
+      post trades_url, params: {
+        model: {
+          account_id: @entry.account_id,
+          type: "buy",
+          date: Date.current,
+          ticker: "NVDA (NASDAQ)",
+          qty: 0.12345678,
+          price: 20,
+          fee: 0.00012345,
+          stop_loss_price: 15.5,
+          take_profit_price: 30,
+          executed_time: "14:30",
+          currency: "USD"
+        }
+      }
+    end
+
+    trade = Trade.order(created_at: :desc).first
+
+    assert_equal BigDecimal("0.00012345"), trade.fee
+    assert_equal "15.5", trade.extra.dig("trade_log", "stop_loss")
+    assert_equal "30", trade.extra.dig("trade_log", "take_profit")
+    assert_equal "14:30", trade.extra.dig("trade_log", "executed_time")
+  end
 end
