@@ -12,10 +12,11 @@ class TradeLogsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, entries(:trade).account.name
   end
 
-  test "shows holdings placeholder tab" do
+  test "shows holdings tab with current positions" do
     get trade_logs_url(tab: "holdings")
 
     assert_response :success
+    assert_includes response.body, holdings(:one).ticker
   end
 
   test "falls back to log tab for unknown tab param" do

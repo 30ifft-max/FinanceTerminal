@@ -7,8 +7,22 @@ zh-CN:
       tab_log: 操作日志
       tab_holdings: 现有持仓
       tab_closed: 平仓复盘
-      holdings_coming_soon: 现有持仓视图将在下一阶段提供。
       closed_coming_soon: 平仓复盘将在后续阶段提供。
+    holdings:
+      total_market_value: 总市值
+      total_unrealized: 总浮盈/亏
+      total_return_pct: 综合收益率
+      empty: 当前没有持仓。
+      col_security: 标的
+      col_account: 账户
+      col_qty: 持仓量
+      col_avg_cost: 成本均价
+      col_price: 现价
+      col_stop_loss: 止损价
+      col_take_profit: 止盈价
+      col_market_value: 市值
+      col_unrealized: 浮盈/亏
+      col_converted: 折算(%{currency})
     log:
       empty: 还没有任何买卖记录，点击「录入操作」添加第一笔。
       col_datetime: 日期

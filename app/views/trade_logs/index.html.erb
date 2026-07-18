@@ -24,9 +24,7 @@
   <% when "log" %>
     <%= render "trade_logs/log", entries: @entries, pagy: @pagy %>
   <% when "holdings" %>
-    <div class="bg-container rounded-xl border border-secondary p-8 text-center text-sm text-secondary">
-      <%= t(".holdings_coming_soon") %>
-    </div>
+    <%= render "trade_logs/holdings", holdings_view: @holdings_view %>
   <% when "closed" %>
     <div class="bg-container rounded-xl border border-secondary p-8 text-center text-sm text-secondary">
       <%= t(".closed_coming_soon") %>

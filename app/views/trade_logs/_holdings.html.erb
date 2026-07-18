@@ -1,0 +1,83 @@
+<%# locals: (holdings_view:) %>
+
+<% rows = holdings_view.rows %>
+
+<div class="space-y-4">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-container rounded-xl border border-alpha-black-25 shadow-border-xs p-4">
+      <p class="text-xs uppercase text-secondary font-medium"><%= t(".total_market_value") %></p>
+      <p class="text-xl font-medium text-primary mt-1 privacy-sensitive">
+        <%= holdings_view.total_market_value ? format_money(holdings_view.total_market_value) : "—" %>
+      </p>
+    </div>
+    <div class="bg-container rounded-xl border border-alpha-black-25 shadow-border-xs p-4">
+      <p class="text-xs uppercase text-secondary font-medium"><%= t(".total_unrealized") %></p>
+      <% gain = holdings_view.total_unrealized %>
+      <p class="text-xl font-medium mt-1 privacy-sensitive <%= gain.nil? ? "text-primary" : (gain.amount.negative? ? "text-destructive" : "text-success") %>">
+        <%= gain ? format_money(gain) : "—" %>
+      </p>
+    </div>
+    <div class="bg-container rounded-xl border border-alpha-black-25 shadow-border-xs p-4">
+      <p class="text-xs uppercase text-secondary font-medium"><%= t(".total_return_pct") %></p>
+      <% pct = holdings_view.total_return_pct %>
+      <p class="text-xl font-medium mt-1 privacy-sensitive <%= pct.nil? ? "text-primary" : (pct.negative? ? "text-destructive" : "text-success") %>">
+        <%= pct ? number_to_percentage(pct, precision: 2) : "—" %>
+      </p>
+    </div>
+  </div>
+
+  <div class="bg-container rounded-xl border border-alpha-black-25 shadow-border-xs">
+    <% if rows.empty? %>
+      <div class="p-8 text-center text-sm text-secondary"><%= t(".empty") %></div>
+    <% else %>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-xs uppercase text-secondary border-b border-alpha-black-50">
+              <th class="text-left font-medium px-4 py-2.5"><%= t(".col_security") %></th>
+              <th class="text-left font-medium px-4 py-2.5"><%= t(".col_account") %></th>
+              <th class="text-right font-medium px-4 py-2.5"><%= t(".col_qty") %></th>
+              <th class="text-right font-medium px-4 py-2.5"><%= t(".col_avg_cost") %></th>
+              <th class="text-right font-medium px-4 py-2.5"><%= t(".col_price") %></th>
+              <th class="text-right font-medium px-4 py-2.5"><%= t(".col_stop_loss") %></th>
+              <th class="text-right font-medium px-4 py-2.5"><%= t(".col_take_profit") %></th>
+              <th class="text-right font-medium px-4 py-2.5"><%= t(".col_market_value") %></th>
+              <th class="text-right font-medium px-4 py-2.5"><%= t(".col_unrealized") %></th>
+              <th class="text-right font-medium px-4 py-2.5"><%= t(".col_converted", currency: Current.family.currency) %></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-alpha-black-50">
+            <% rows.each do |row| %>
+              <% holding = row.holding %>
+              <tr class="hover:bg-container-hover">
+                <td class="px-4 py-2.5 whitespace-nowrap">
+                  <%= link_to holding_path(holding), data: { turbo_frame: :drawer }, class: "hover:underline" do %>
+                    <span class="font-medium text-primary"><%= holding.ticker %></span>
+                    <span class="text-secondary text-xs block truncate max-w-48"><%= holding.name %></span>
+                  <% end %>
+                </td>
+                <td class="px-4 py-2.5 whitespace-nowrap text-secondary"><%= row.account.name %></td>
+                <td class="px-4 py-2.5 whitespace-nowrap text-right text-primary privacy-sensitive"><%= format_quantity(holding.qty) %></td>
+                <td class="px-4 py-2.5 whitespace-nowrap text-right text-secondary privacy-sensitive"><%= holding.avg_cost ? format_money(holding.avg_cost) : "—" %></td>
+                <td class="px-4 py-2.5 whitespace-nowrap text-right text-primary privacy-sensitive"><%= holding.price ? format_money(Money.new(holding.price, holding.currency)) : "—" %></td>
+                <td class="px-4 py-2.5 whitespace-nowrap text-right text-secondary privacy-sensitive"><%= row.stop_loss.present? ? format_money(Money.new(row.stop_loss.to_d, holding.currency)) : "—" %></td>
+                <td class="px-4 py-2.5 whitespace-nowrap text-right text-secondary privacy-sensitive"><%= row.take_profit.present? ? format_money(Money.new(row.take_profit.to_d, holding.currency)) : "—" %></td>
+                <td class="px-4 py-2.5 whitespace-nowrap text-right text-primary privacy-sensitive"><%= holding.amount_money ? format_money(holding.amount_money) : "—" %></td>
+                <td class="px-4 py-2.5 whitespace-nowrap text-right privacy-sensitive">
+                  <% if holding.trend %>
+                    <span style="color: <%= holding.trend.color %>;">
+                      <%= format_money(holding.trend.value) %> (<%= holding.trend.percent_formatted %>)
+                    </span>
+                  <% else %>
+                    <span class="text-secondary">—</span>
+                  <% end %>
+                </td>
+                <td class="px-4 py-2.5 whitespace-nowrap text-right text-primary privacy-sensitive"><%= row.converted_amount ? format_money(row.converted_amount) : "—" %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  </div>
+</div>

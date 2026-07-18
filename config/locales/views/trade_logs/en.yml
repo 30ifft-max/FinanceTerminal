@@ -7,8 +7,22 @@ en:
       tab_log: Trade log
       tab_holdings: Holdings
       tab_closed: Closed positions
-      holdings_coming_soon: Holdings view is coming in the next stage.
       closed_coming_soon: Closed-position review is coming in a later stage.
+    holdings:
+      total_market_value: Total market value
+      total_unrealized: Total unrealized G/L
+      total_return_pct: Overall return
+      empty: No open positions.
+      col_security: Security
+      col_account: Account
+      col_qty: Quantity
+      col_avg_cost: Avg cost
+      col_price: Price
+      col_stop_loss: Stop-loss
+      col_take_profit: Take-profit
+      col_market_value: Market value
+      col_unrealized: Unrealized G/L
+      col_converted: Value (%{currency})
     log:
       empty: No trades logged yet. Use "Log trade" to record your first one.
       col_datetime: Date

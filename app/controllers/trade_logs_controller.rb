@@ -13,6 +13,8 @@ class TradeLogsController < ApplicationController
         .reverse_chronological
 
       @pagy, @entries = pagy(base_scope, limit: safe_per_page(default: 50, allowed_values: [ 30, 50, 200 ]))
+    elsif @tab == "holdings"
+      @holdings_view = TradeLog::HoldingsView.new(family: Current.family, user: Current.user)
     end
   end
 end
