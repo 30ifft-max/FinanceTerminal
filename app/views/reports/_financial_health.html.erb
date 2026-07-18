@@ -1,0 +1,69 @@
+<%# locals: (health:) %>
+
+<div class="space-y-5">
+  <div>
+    <h3 class="text-xs uppercase text-secondary font-medium mb-3"><%= t(".assets_group") %></h3>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <% debt_ratio = health.debt_ratio %>
+      <% emergency = health.emergency_months %>
+      <% [
+        [ t(".total_assets"), format_money(health.total_assets), "text-primary" ],
+        [ t(".total_liabilities"), format_money(health.total_liabilities), "text-primary" ],
+        [ t(".net_worth"), format_money(health.net_worth), health.net_worth.amount.negative? ? "text-destructive" : "text-success" ],
+        [ t(".debt_ratio"), debt_ratio ? number_to_percentage(debt_ratio, precision: 1) : "—",
+          debt_ratio && debt_ratio > 50 ? "text-destructive" : "text-primary" ],
+        [ t(".liquid_assets"), format_money(health.liquid_assets), "text-primary" ],
+        [ t(".emergency_months"), emergency ? t(".months", count: emergency) : "—",
+          emergency && emergency < 3 ? "text-destructive" : "text-primary" ],
+      ].each do |label, value, color| %>
+        <div>
+          <p class="text-xs uppercase text-secondary font-medium"><%= label %></p>
+          <p class="text-lg font-medium mt-0.5 privacy-sensitive <%= color %>"><%= value %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div>
+    <h3 class="text-xs uppercase text-secondary font-medium mb-3"><%= t(".cashflow_group") %></h3>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <% savings = health.savings_rate %>
+      <% engel = health.engel_coefficient %>
+      <% [
+        [ t(".savings_rate"), savings ? number_to_percentage(savings, precision: 1) : "—",
+          savings&.negative? ? "text-destructive" : "text-success" ],
+        [ t(".engel"), engel ? number_to_percentage(engel, precision: 1) : "—", "text-primary" ],
+        [ t(".monthly_income"), health.monthly_income ? format_money(health.monthly_income) : "—", "text-primary" ],
+        [ t(".monthly_expenses"), health.monthly_expenses ? format_money(health.monthly_expenses) : "—", "text-primary" ],
+      ].each do |label, value, color| %>
+        <div>
+          <p class="text-xs uppercase text-secondary font-medium"><%= label %></p>
+          <p class="text-lg font-medium mt-0.5 privacy-sensitive <%= color %>"><%= value %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div>
+    <h3 class="text-xs uppercase text-secondary font-medium mb-3"><%= t(".freedom_group") %></h3>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <% freedom = health.financial_freedom %>
+      <% fire = health.fire_progress %>
+      <% [
+        [ t(".passive_income"), format_money(health.passive_income), "text-primary" ],
+        [ t(".financial_freedom"), freedom ? number_to_percentage(freedom, precision: 1) : "—",
+          freedom && freedom >= 100 ? "text-success" : "text-primary" ],
+        [ t(".fire_target"), health.fire_target ? format_money(health.fire_target) : "—", "text-primary" ],
+        [ t(".fire_progress"), fire ? number_to_percentage(fire, precision: 1) : "—",
+          fire && fire >= 100 ? "text-success" : "text-primary" ],
+      ].each do |label, value, color| %>
+        <div>
+          <p class="text-xs uppercase text-secondary font-medium"><%= label %></p>
+          <p class="text-lg font-medium mt-0.5 privacy-sensitive <%= color %>"><%= value %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <p class="text-xs text-secondary"><%= t(".hint") %></p>
+</div>

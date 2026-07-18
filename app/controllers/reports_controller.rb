@@ -121,6 +121,15 @@ class ReportsController < ApplicationController
       # Calculate summary metrics
       @summary_metrics = build_summary_metrics
 
+      @financial_health = FinancialHealth.new(
+        family: Current.family,
+        user: Current.user,
+        period: @period,
+        income_total: @current_income_totals.total,
+        expense_total: @current_expense_totals.total,
+        expense_category_totals: @current_expense_totals.category_totals
+      )
+
       # Build trend data (last 6 months)
       @trends_data = build_trends_data(income_statement: @income_statement)
 
@@ -153,6 +162,14 @@ class ReportsController < ApplicationController
 
     def build_reports_sections
       all_sections = [
+        {
+          key: "financial_health",
+          title: "reports.financial_health.title",
+          partial: "reports/financial_health",
+          locals: { health: @financial_health },
+          visible: @has_accounts,
+          collapsible: true
+        },
         {
           key: "net_worth",
           title: "reports.net_worth.title",

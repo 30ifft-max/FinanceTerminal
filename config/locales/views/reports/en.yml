@@ -129,6 +129,29 @@ en:
           other: Showing %{count} entries
         previous: Previous
         next: Next
+    financial_health:
+      title: Financial health
+      assets_group: Assets & liabilities
+      total_assets: Total assets
+      total_liabilities: Total liabilities
+      net_worth: Net worth
+      debt_ratio: Debt ratio
+      liquid_assets: Liquid assets
+      emergency_months: Emergency fund
+      months:
+        one: "%{count} month"
+        other: "%{count} months"
+      cashflow_group: Cash flow
+      savings_rate: Savings rate
+      engel: Engel coefficient
+      monthly_income: Monthly income
+      monthly_expenses: Monthly expenses
+      freedom_group: Financial freedom
+      passive_income: Passive income (period)
+      financial_freedom: Freedom (passive/expenses)
+      fire_target: FIRE target (25× yearly spend)
+      fire_progress: FIRE progress
+      hint: "Liquid assets = cash accounts. Engel = food-related categories / total expenses (matched by category name). Passive income = dividends + interest in the selected period. Transfers are excluded from income/expense totals."
     net_worth:
       title: Net Worth
       current_net_worth: Current Net Worth
