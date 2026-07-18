@@ -119,6 +119,17 @@ zh-CN:
         dashboard_two_column_description: 在大屏幕上以两列显示仪表盘组件；关闭后，组件将以单列堆叠显示。
         split_grouped_title: 将拆分交易分组显示
         split_grouped_description: 在交易列表中按父级分组显示拆分交易；关闭后，拆分子项将作为独立行显示。
+    trade_fee_rates:
+      show:
+        page_title: 投资账户费率
+        title: 投资账户费率
+        subtitle: 为每个投资账户设置默认手续费率，录入买卖操作时将按「费率 × 成交量 × 成交价」自动预填手续费。
+        empty: 还没有投资或加密货币账户。
+        rate_placeholder: 如 0.0008
+        save: 保存
+        hint: 请以小数形式填写费率，例如 0.0008 表示成交额的 0.08%（万8）。留空则清除费率。
+      update:
+        success: "已更新 %{name} 的手续费率。"
     preferences:
       show:
         country: 国家
@@ -250,6 +261,7 @@ zh-CN:
       preferences_label: 偏好设置
       profile_label: 个人资料信息
       recurring_transactions_label: 循环交易
+      trade_fee_rates_label: 投资账户费率
       rules_label: 规则
       security_label: 安全性
       self_hosting_label: 自托管

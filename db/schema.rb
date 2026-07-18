@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_06_28_200000) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_18_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -120,6 +120,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_28_200000) do
     t.datetime "disabled_at"
     t.boolean "exclude_from_reports", default: false, null: false
     t.integer "account_providers_count", default: 0, null: false
+    t.decimal "trade_fee_rate", precision: 10, scale: 6
     t.index ["accountable_id", "accountable_type"], name: "index_accounts_on_accountable_id_and_accountable_type"
     t.index ["accountable_type"], name: "index_accounts_on_accountable_type"
     t.index ["currency"], name: "index_accounts_on_currency"
@@ -1989,7 +1990,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_28_200000) do
     t.string "currency"
     t.jsonb "locked_attributes", default: {}
     t.string "investment_activity_label"
-    t.decimal "fee", precision: 19, scale: 4, default: "0.0", null: false
+    t.decimal "fee", precision: 19, scale: 8, default: "0.0", null: false
     t.jsonb "extra", default: {}, null: false
     t.index ["extra"], name: "index_trades_on_extra", using: :gin
     t.index ["investment_activity_label"], name: "index_trades_on_investment_activity_label"

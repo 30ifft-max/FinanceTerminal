@@ -119,6 +119,17 @@ en:
         dashboard_two_column_description: Display dashboard widgets in two columns on large screens, with per-widget width and height controls in each widget's header. When off, widgets stack in a single column.
         split_grouped_title: Group split transactions
         split_grouped_description: Show split transactions grouped under their parent in the transaction list. When off, split children appear as individual rows.
+    trade_fee_rates:
+      show:
+        page_title: Trade fee rates
+        title: Trade fee rates
+        subtitle: Set a default fee rate per investment account. It will pre-fill the fee when logging a trade (fee = rate × quantity × price).
+        empty: No investment or crypto accounts yet.
+        rate_placeholder: e.g. 0.0008
+        save: Save
+        hint: Enter the rate as a decimal fraction, e.g. 0.0008 means 0.08% of the trade value. Leave blank to remove.
+      update:
+        success: "Fee rate for %{name} updated."
     preferences:
       show:
         country: Country
@@ -282,6 +293,7 @@ en:
       preferences_label: Preferences
       profile_label: Profile Info
       recurring_transactions_label: Recurring
+      trade_fee_rates_label: Trade fee rates
       rules_label: Rules
       mcp_label: MCP
       security_label: Security

@@ -1,0 +1,27 @@
+<%= content_for :page_title, t(".page_title") %>
+
+<%= settings_section title: t(".title"), subtitle: t(".subtitle") do %>
+  <% if @accounts.empty? %>
+    <p class="text-sm text-secondary"><%= t(".empty") %></p>
+  <% else %>
+    <ul class="divide-y divide-alpha-black-50">
+      <% @accounts.each do |account| %>
+        <li class="flex items-center justify-between gap-4 py-3">
+          <div class="min-w-0">
+            <p class="text-sm font-medium text-primary truncate"><%= account.name %></p>
+            <p class="text-xs text-secondary"><%= account.accountable_type %> · <%= account.currency %></p>
+          </div>
+          <%= form_with url: settings_trade_fee_rates_path, method: :patch, class: "flex items-center gap-2 shrink-0" do |form| %>
+            <%= hidden_field_tag :account_id, account.id %>
+            <input type="text" name="account[trade_fee_rate]" inputmode="decimal" autocomplete="off"
+              value="<%= account.trade_fee_rate&.to_s("F") %>"
+              placeholder="<%= t(".rate_placeholder") %>"
+              class="w-32 border border-secondary rounded-lg bg-container-inset py-1.5 px-2 text-sm text-primary text-right focus-visible:ring-2 focus-visible:ring-alpha-black-300">
+            <%= render DS::Button.new(text: t(".save"), type: :submit, size: :sm, variant: "outline") %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+    <p class="text-xs text-secondary mt-3"><%= t(".hint") %></p>
+  <% end %>
+<% end %>
