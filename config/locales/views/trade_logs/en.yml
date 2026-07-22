@@ -47,6 +47,16 @@ en:
       result_kept: "Kept →"
       settle: Settle
       settle_overdue: "⚠ Settle"
+      summary_accumulate:
+        one: "Accumulation (%{count} batch)"
+        other: "Accumulation (%{count} batches)"
+      summary_cashflow:
+        one: "Cash flow (%{count} batch)"
+        other: "Cash flow (%{count} batches)"
+      summary_forced_conversions:
+        one: "%{count} forced conversion"
+        other: "%{count} forced conversions"
+      close_batch: Close & archive
       no_spot: no price
     closed:
       empty: No closed positions yet. When a security's holding returns to zero, its full round-trip appears here.

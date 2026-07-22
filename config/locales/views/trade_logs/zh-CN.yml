@@ -43,6 +43,13 @@ zh-CN:
       result_kept: 未交割 →
       settle: 结算
       settle_overdue: ⚠ 待结算
+      summary_accumulate:
+        other: 增持批次(%{count}个) 累计净增
+      summary_cashflow:
+        other: 现金流批次(%{count}个) 累计净得
+      summary_forced_conversions:
+        other: 被迫交割 %{count} 次
+      close_batch: 结清归档
       no_spot: 无行情
     closed:
       empty: 还没有已平仓的记录。当某标的持仓清零后，整笔投资会自动出现在这里。

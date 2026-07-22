@@ -3,13 +3,58 @@
 <% fmt_qty = ->(v) { v.to_d.round(8).to_s("F").sub(/\.?0+\z/, "") } %>
 
 <div class="space-y-4">
+  <% if batches.any? %>
+    <%
+      accumulate_batches = batches.select { |b| b.purpose == "accumulate" }
+      cashflow_batches = batches.select { |b| b.purpose == "cashflow" }
+
+      acc_gain = accumulate_batches.filter_map { |b|
+        spot = b.effective_spot
+        next unless spot&.positive?
+        b.total_value_in_quote(spot) / spot - b.initial_in_asset
+      }
+      acc_initial = accumulate_batches.filter_map { |b| b.effective_spot&.positive? ? b.initial_in_asset : nil }.sum
+
+      cf_gain = cashflow_batches.filter_map { |b|
+        spot = b.effective_spot
+        next unless spot&.positive?
+        b.total_value_in_quote(spot) - b.initial_in_quote
+      }
+      cf_initial = cashflow_batches.filter_map { |b| b.effective_spot&.positive? ? b.initial_in_quote : nil }.sum
+      cf_conversions = cashflow_batches.sum(&:conversions_count)
+    %>
+    <div class="bg-container rounded-xl border border-alpha-black-25 shadow-border-xs p-4 flex flex-col md:flex-row gap-x-10 gap-y-2 text-sm">
+      <% if accumulate_batches.any? %>
+        <span class="text-secondary">
+          🎯 <%= t(".summary_accumulate", count: accumulate_batches.size) %>:
+          <% total = acc_gain.sum %>
+          <span class="privacy-sensitive font-medium <%= total.negative? ? "text-destructive" : "text-success" %>">
+            <%= total.negative? ? "" : "+" %><%= fmt_qty.call(total) %> <%= accumulate_batches.first.asset_symbol %>
+            <% if acc_initial.positive? %>(<%= number_to_percentage(total / acc_initial * 100, precision: 2) %>)<% end %>
+          </span>
+        </span>
+      <% end %>
+      <% if cashflow_batches.any? %>
+        <span class="text-secondary">
+          💧 <%= t(".summary_cashflow", count: cashflow_batches.size) %>:
+          <% total = cf_gain.sum %>
+          <span class="privacy-sensitive font-medium <%= total.negative? ? "text-destructive" : "text-success" %>">
+            <%= total.negative? ? "" : "+" %><%= fmt_qty.call(total.round(2)) %> <%= cashflow_batches.first.quote_symbol %>
+            <% if cf_initial.positive? %>(<%= number_to_percentage(total / cf_initial * 100, precision: 2) %>)<% end %>
+          </span>
+          · <%= t(".summary_forced_conversions", count: cf_conversions) %>
+        </span>
+      <% end %>
+    </div>
+  <% end %>
+
   <% if batches.empty? %>
     <div class="bg-container rounded-xl border border-alpha-black-25 shadow-border-xs p-8 text-center text-sm text-secondary">
       <%= t(".empty") %>
     </div>
   <% else %>
     <% batches.each do |batch| %>
-      <% spot = batch.current_spot %>
+      <% spot = batch.effective_spot %>
       <% asset_qty, quote_qty = batch.holdings_including_pending %>
       <% asset_ret = batch.asset_return_pct(spot) %>
       <% quote_ret = batch.quote_return_pct(spot) %>
@@ -31,6 +76,9 @@
           <% end %>
           <span class="ml-auto text-xs text-secondary">
             <%= I18n.l(batch.started_on, format: :default) %> @ <%= fmt_qty.call(batch.start_spot_price) %>
+            <% if !batch.active? && batch.closed_on %>
+              → <%= I18n.l(batch.closed_on, format: :default) %><% if batch.close_spot_price %> @ <%= fmt_qty.call(batch.close_spot_price) %><% end %>
+            <% end %>
           </span>
         </div>
 
@@ -72,7 +120,11 @@
             <span class="truncate max-w-64" title="<%= batch.notes %>"><%= batch.notes %></span>
           <% end %>
           <% if batch.active? %>
-            <span class="ml-auto">
+            <span class="ml-auto flex items-center gap-2">
+              <% if batch.closeable? && batch.rounds.any? %>
+                <%= render DS::Link.new(text: t(".close_batch"), icon: "archive", variant: "ghost", size: "sm",
+                      href: close_derivative_batch_path(batch), frame: :modal) %>
+              <% end %>
               <%= render DS::Link.new(text: t(".new_round"), icon: "plus", variant: "outline", size: "sm",
                     href: new_derivative_round_path(batch_id: batch.id), frame: :modal) %>
             </span>

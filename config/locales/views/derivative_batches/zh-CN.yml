@@ -17,5 +17,15 @@ zh-CN:
       started_on: 开始日期
       notes: 备注
       submit: 创建批次
+    close:
+      title: 结清归档批次
+      summary: 当前持有 %{asset} + %{quote}（初始投入 %{initial}）。归档后将按下方现货价锁定最终双本位收益率。
+      close_spot_price: 结清现货价
+      close_spot_hint: 已按最新行情预填，可改为实际出清时的价格。
+      closed_on: 结清日期
+      submit: 结清归档
+      pending_rounds: 还有期次待结算，暂不能结清。
+    apply_close:
+      success: 批次已结清归档。
     create:
       success: 批次已创建。

@@ -111,6 +111,15 @@ class DerivativeBatch < ApplicationRecord
     security&.prices&.order(date: :desc)&.first&.price
   end
 
+  # 已结清批次用结清时锁定的价格，进行中批次用最新行情
+  def effective_spot
+    active? ? current_spot : (close_spot_price || current_spot)
+  end
+
+  def closeable?
+    active? && rounds.none?(&:pending?)
+  end
+
   private
     def initial_currency_is_leg
       return if [ asset_symbol, quote_symbol ].include?(initial_currency)

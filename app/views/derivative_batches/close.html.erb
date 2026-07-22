@@ -1,0 +1,32 @@
+<% fmt = ->(v) { v.to_d.round(8).to_s("F").sub(/\.?0+\z/, "") } %>
+<% asset_qty, quote_qty = @batch.holdings_including_pending %>
+
+<%= render DS::Dialog.new do |dialog| %>
+  <% dialog.with_header(title: t(".title")) %>
+  <% dialog.with_body do %>
+    <%= styled_form_with url: close_derivative_batch_path(@batch), method: :patch do |form| %>
+      <div class="space-y-4">
+        <p class="text-sm text-secondary">
+          <%= t(".summary",
+                asset: "#{fmt.call(asset_qty)} #{@batch.asset_symbol}",
+                quote: "#{fmt.call(quote_qty)} #{@batch.quote_symbol}",
+                initial: "#{fmt.call(@batch.initial_amount)} #{@batch.initial_currency}") %>
+        </p>
+
+        <div class="form-field">
+          <label class="form-field__label" for="close_spot_price"><%= t(".close_spot_price") %></label>
+          <input type="number" step="any" min="0" name="close_spot_price" id="close_spot_price" required autocomplete="off"
+            value="<%= @batch.current_spot&.to_s("F")&.sub(/\.?0+\z/, "") %>" class="form-field__input">
+          <p class="text-xs text-secondary mt-1"><%= t(".close_spot_hint") %></p>
+        </div>
+
+        <div class="form-field">
+          <label class="form-field__label" for="closed_on"><%= t(".closed_on") %></label>
+          <%= date_field_tag :closed_on, Date.current, class: "form-field__input", autocomplete: "off" %>
+        </div>
+
+        <%= form.submit t(".submit") %>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

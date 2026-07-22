@@ -22,7 +22,28 @@ class DerivativeBatchesController < ApplicationController
     end
   end
 
+  def close
+    @batch = accessible_batches.find(params[:id])
+    redirect_to trade_logs_path(tab: "derivatives"), alert: t(".pending_rounds") unless @batch.closeable?
+  end
+
+  def apply_close
+    @batch = accessible_batches.find(params[:id])
+    return redirect_to trade_logs_path(tab: "derivatives"), alert: t("derivative_batches.close.pending_rounds") unless @batch.closeable?
+
+    @batch.update!(
+      status: "closed",
+      closed_on: params[:closed_on].presence || Date.current,
+      close_spot_price: params[:close_spot_price].presence || @batch.current_spot
+    )
+    redirect_to trade_logs_path(tab: "derivatives"), notice: t(".success")
+  end
+
   private
+    def accessible_batches
+      DerivativeBatch.where(account_id: tradable_accounts.select(:id))
+    end
+
     def batch_params
       params.require(:derivative_batch).permit(
         :account_id, :purpose, :asset_symbol, :quote_symbol,

@@ -17,5 +17,15 @@ en:
       started_on: Start date
       notes: Notes
       submit: Create batch
+    close:
+      title: Close & archive batch
+      summary: "Current holdings: %{asset} + %{quote} (initial %{initial}). Closing locks the final dual-anchor returns at the spot price below."
+      close_spot_price: Spot price at close
+      close_spot_hint: Pre-filled from latest price data; adjust to the actual price when you closed out.
+      closed_on: Close date
+      submit: Close batch
+      pending_rounds: Cannot close — some rounds are still awaiting settlement.
+    apply_close:
+      success: Batch closed and archived.
     create:
       success: Batch created.
