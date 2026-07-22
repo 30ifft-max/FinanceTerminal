@@ -1,0 +1,29 @@
+---
+en:
+  derivative_rounds:
+    new:
+      title: "Log round %{position}"
+      direction: Direction
+      direction_sell_high: "Sell high (%{asset} → %{quote})"
+      direction_buy_low: "Buy low (%{quote} → %{asset})"
+      invested_amount: Invested amount
+      strike_price: Strike price
+      apy: APY (%)
+      start_on: Start date
+      expires_on: Expiry date
+      notes: Notes
+      submit: Log round
+    create:
+      success: Round logged.
+    settle:
+      title: "Settle round %{position}"
+      summary: "Invested %{invested} %{currency} @ strike %{strike}, expired %{expires}."
+      result: Settlement result
+      not_converted: "Not converted — received back in %{currency} (plus interest)"
+      converted: "Converted — received in %{currency} at strike"
+      received_amount: Amount received (incl. interest)
+      received_placeholder: e.g. 0.523
+      settled_on: Settlement date
+      submit: Save settlement
+    apply_settlement:
+      success: Settlement saved.

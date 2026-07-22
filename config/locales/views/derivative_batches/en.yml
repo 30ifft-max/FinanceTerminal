@@ -1,0 +1,21 @@
+---
+en:
+  derivative_batches:
+    new:
+      title: New dual-investment batch
+    form:
+      account: Account
+      account_prompt: Select account
+      purpose: Purpose
+      purpose_accumulate: BTC accumulation (conversion acceptable)
+      purpose_cashflow: Cash flow (avoid conversion)
+      asset_symbol: Asset leg
+      quote_symbol: Quote leg
+      initial_amount: Initial principal
+      initial_currency: Principal currency
+      start_spot_price: Spot price at start
+      started_on: Start date
+      notes: Notes
+      submit: Create batch
+    create:
+      success: Batch created.

@@ -7,6 +7,47 @@ en:
       tab_log: Trade log
       tab_holdings: Holdings
       tab_closed: Closed positions
+      tab_derivatives: Derivatives
+      new_batch: New batch
+    derivatives:
+      empty: No dual-investment batches yet. Create one with "New batch" to anchor your principal.
+      purpose_accumulate: BTC accumulation
+      purpose_cashflow: Cash flow
+      status_active: "Active · round %{count}"
+      status_closed: Closed
+      overdue_rounds:
+        one: "%{count} round awaiting settlement"
+        other: "%{count} rounds awaiting settlement"
+      pending_rounds:
+        one: "%{count} round locked"
+        other: "%{count} rounds locked"
+      conversions:
+        one: "%{count} conversion"
+        other: "%{count} conversions"
+      initial: Initial
+      current: Now
+      spot: Spot
+      asset_return: "%{asset} return"
+      quote_return: "%{quote} return"
+      vs_hodl: vs HODL
+      new_round: New round
+      toggle_rounds:
+        one: "Show %{count} round"
+        other: "Show %{count} rounds"
+      col_position: "#"
+      col_direction: Direction
+      col_invested: Invested
+      col_strike: Strike
+      col_apy: APY
+      col_expires: Expires
+      col_result: Result
+      direction_sell_high: Sell high
+      direction_buy_low: Buy low
+      result_converted: "Converted →"
+      result_kept: "Kept →"
+      settle: Settle
+      settle_overdue: "⚠ Settle"
+      no_spot: no price
     closed:
       empty: No closed positions yet. When a security's holding returns to zero, its full round-trip appears here.
       col_avg_buy: Avg buy

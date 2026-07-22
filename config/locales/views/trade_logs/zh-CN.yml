@@ -7,6 +7,43 @@ zh-CN:
       tab_log: 操作日志
       tab_holdings: 现有持仓
       tab_closed: 平仓复盘
+      tab_derivatives: 衍生品日志
+      new_batch: 新建批次
+    derivatives:
+      empty: 还没有双币投批次。点击「新建批次」锁定你的初始投入锚点。
+      purpose_accumulate: 增持BTC
+      purpose_cashflow: 现金流
+      status_active: 进行中 · 第%{count}期
+      status_closed: 已结清
+      overdue_rounds:
+        other: "%{count} 期待结算"
+      pending_rounds:
+        other: "%{count} 期锁仓中"
+      conversions:
+        other: 经历交割 %{count} 次
+      initial: 初始投入
+      current: 当前持有
+      spot: 现价
+      asset_return: "%{asset}本位"
+      quote_return: "%{quote}本位"
+      vs_hodl: vs 纯持有
+      new_round: 录入新期次
+      toggle_rounds:
+        other: 展开期次明细（%{count} 期）
+      col_position: 期
+      col_direction: 方向
+      col_invested: 投入
+      col_strike: 执行价
+      col_apy: 年化
+      col_expires: 到期日
+      col_result: 结果
+      direction_sell_high: 高卖
+      direction_buy_low: 低买
+      result_converted: 已交割 →
+      result_kept: 未交割 →
+      settle: 结算
+      settle_overdue: ⚠ 待结算
+      no_spot: 无行情
     closed:
       empty: 还没有已平仓的记录。当某标的持仓清零后，整笔投资会自动出现在这里。
       col_avg_buy: 成本均价

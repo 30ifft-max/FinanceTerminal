@@ -1,0 +1,21 @@
+---
+zh-CN:
+  derivative_batches:
+    new:
+      title: 新建双币投批次
+    form:
+      account: 投资账户
+      account_prompt: 选择账户
+      purpose: 批次目的
+      purpose_accumulate: 🎯 增持BTC（可接受交割）
+      purpose_cashflow: 💧 现金流（尽力不交割）
+      asset_symbol: 资产币
+      quote_symbol: 计价币
+      initial_amount: 初始本金
+      initial_currency: 本金币种
+      start_spot_price: 建仓现货价
+      started_on: 开始日期
+      notes: 备注
+      submit: 创建批次
+    create:
+      success: 批次已创建。

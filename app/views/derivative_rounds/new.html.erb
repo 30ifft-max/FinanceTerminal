@@ -1,0 +1,29 @@
+<%= render DS::Dialog.new do |dialog| %>
+  <% dialog.with_header(title: t(".title", position: (@batch.rounds.maximum(:position) || 0) + 1)) %>
+  <% dialog.with_body do %>
+    <%= styled_form_with model: @round, url: derivative_rounds_path(batch_id: @batch.id), scope: :derivative_round do |form| %>
+      <div class="space-y-4">
+        <% if @round.errors.any? %>
+          <%= render "shared/form_errors", model: @round %>
+        <% end %>
+
+        <div class="space-y-2">
+          <%= form.select :direction, [
+                [ t(".direction_sell_high", asset: @batch.asset_symbol, quote: @batch.quote_symbol), "sell_high" ],
+                [ t(".direction_buy_low", asset: @batch.asset_symbol, quote: @batch.quote_symbol), "buy_low" ]
+              ], { label: t(".direction"), required: true } %>
+          <%= form.number_field :invested_amount, label: t(".invested_amount"), min: 0, step: "any", required: true %>
+          <%= form.number_field :strike_price, label: t(".strike_price"), min: 0, step: "any", required: true %>
+          <%= form.number_field :apy, label: t(".apy"), min: 0, step: "any" %>
+          <div class="grid grid-cols-2 gap-2">
+            <%= form.date_field :start_on, label: t(".start_on"), required: true %>
+            <%= form.date_field :expires_on, label: t(".expires_on"), required: true %>
+          </div>
+          <%= form.text_area :notes, label: t(".notes"), rows: 2 %>
+        </div>
+
+        <%= form.submit t(".submit") %>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_18_120000) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_22_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -579,6 +579,43 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_18_120000) do
     t.datetime "updated_at", null: false
     t.jsonb "locked_attributes", default: {}
     t.string "subtype"
+  end
+
+  create_table "derivative_batches", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "account_id", null: false
+    t.string "purpose", null: false
+    t.string "asset_symbol", null: false
+    t.string "quote_symbol", null: false
+    t.decimal "initial_amount", precision: 24, scale: 8, null: false
+    t.string "initial_currency", null: false
+    t.decimal "start_spot_price", precision: 19, scale: 8, null: false
+    t.date "started_on", null: false
+    t.string "status", default: "active", null: false
+    t.date "closed_on"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_derivative_batches_on_account_id"
+  end
+
+  create_table "derivative_rounds", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "derivative_batch_id", null: false
+    t.integer "position", null: false
+    t.string "direction", null: false
+    t.decimal "invested_amount", precision: 24, scale: 8, null: false
+    t.string "invested_currency", null: false
+    t.decimal "strike_price", precision: 19, scale: 8, null: false
+    t.decimal "apy", precision: 10, scale: 4
+    t.date "start_on", null: false
+    t.date "expires_on", null: false
+    t.decimal "received_amount", precision: 24, scale: 8
+    t.string "received_currency"
+    t.date "settled_on"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["derivative_batch_id", "position"], name: "index_derivative_rounds_on_derivative_batch_id_and_position", unique: true
+    t.index ["derivative_batch_id"], name: "index_derivative_rounds_on_derivative_batch_id"
   end
 
   create_table "enable_banking_accounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -2211,6 +2248,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_18_120000) do
   add_foreign_key "debug_log_entries", "accounts", on_delete: :nullify
   add_foreign_key "debug_log_entries", "families", on_delete: :nullify
   add_foreign_key "debug_log_entries", "users", on_delete: :nullify
+  add_foreign_key "derivative_batches", "accounts", on_delete: :cascade
+  add_foreign_key "derivative_rounds", "derivative_batches", on_delete: :cascade
   add_foreign_key "enable_banking_accounts", "enable_banking_items"
   add_foreign_key "enable_banking_items", "families"
   add_foreign_key "entries", "accounts", on_delete: :cascade

@@ -1,0 +1,44 @@
+<% batch = @round.batch %>
+<% converted_currency = @round.invested_currency == batch.asset_symbol ? batch.quote_symbol : batch.asset_symbol %>
+
+<%= render DS::Dialog.new do |dialog| %>
+  <% dialog.with_header(title: t(".title", position: @round.position)) %>
+  <% dialog.with_body do %>
+    <%= styled_form_with url: settle_derivative_round_path(@round), method: :patch do |form| %>
+      <div class="space-y-4">
+        <p class="text-sm text-secondary">
+          <%= t(".summary",
+                invested: @round.invested_amount.to_s("F").sub(/\.?0+\z/, ""),
+                currency: @round.invested_currency,
+                strike: @round.strike_price.to_s("F").sub(/\.?0+\z/, ""),
+                expires: I18n.l(@round.expires_on, format: :default)) %>
+        </p>
+
+        <fieldset class="space-y-2">
+          <legend class="text-sm font-medium text-primary mb-1"><%= t(".result") %></legend>
+          <label class="flex items-center gap-2 text-sm text-primary">
+            <%= radio_button_tag :converted, "0", true %>
+            <%= t(".not_converted", currency: @round.invested_currency) %>
+          </label>
+          <label class="flex items-center gap-2 text-sm text-primary">
+            <%= radio_button_tag :converted, "1", false %>
+            <%= t(".converted", currency: converted_currency) %>
+          </label>
+        </fieldset>
+
+        <div class="form-field">
+          <label class="form-field__label" for="received_amount"><%= t(".received_amount") %></label>
+          <input type="number" step="any" min="0" name="received_amount" id="received_amount" required autocomplete="off"
+            class="form-field__input" placeholder="<%= t(".received_placeholder") %>">
+        </div>
+
+        <div class="form-field">
+          <label class="form-field__label" for="settled_on"><%= t(".settled_on") %></label>
+          <%= date_field_tag :settled_on, Date.current, class: "form-field__input", autocomplete: "off" %>
+        </div>
+
+        <%= form.submit t(".submit") %>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

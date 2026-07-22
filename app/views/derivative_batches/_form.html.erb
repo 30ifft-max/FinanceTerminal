@@ -1,0 +1,37 @@
+<%# locals: (batch:) %>
+
+<% tradable_accounts = Current.family.accounts.merge(Account.accessible_by(Current.user)).visible.where(accountable_type: %w[Investment Crypto]).alphabetically %>
+
+<%= styled_form_with model: batch, url: derivative_batches_path, scope: :derivative_batch do |form| %>
+  <div class="space-y-4">
+    <% if batch.errors.any? %>
+      <%= render "shared/form_errors", model: batch %>
+    <% end %>
+
+    <div class="space-y-2">
+      <%= form.collection_select :account_id, tradable_accounts, :id, :name,
+            { prompt: t(".account_prompt"), label: t(".account"), required: true } %>
+
+      <%= form.select :purpose, [
+            [ t(".purpose_accumulate"), "accumulate" ],
+            [ t(".purpose_cashflow"), "cashflow" ]
+          ], { label: t(".purpose"), required: true } %>
+
+      <div class="grid grid-cols-2 gap-2">
+        <%= form.text_field :asset_symbol, label: t(".asset_symbol"), placeholder: "BTC", required: true %>
+        <%= form.text_field :quote_symbol, label: t(".quote_symbol"), placeholder: "USDT", required: true %>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2">
+        <%= form.number_field :initial_amount, label: t(".initial_amount"), min: 0, step: "any", required: true %>
+        <%= form.text_field :initial_currency, label: t(".initial_currency"), placeholder: "BTC 或 USDT", required: true %>
+      </div>
+
+      <%= form.number_field :start_spot_price, label: t(".start_spot_price"), min: 0, step: "any", required: true %>
+      <%= form.date_field :started_on, label: t(".started_on"), value: batch.started_on || Date.current, required: true %>
+      <%= form.text_area :notes, label: t(".notes"), rows: 2 %>
+    </div>
+
+    <%= form.submit t(".submit") %>
+  </div>
+<% end %>

@@ -1,0 +1,29 @@
+---
+zh-CN:
+  derivative_rounds:
+    new:
+      title: 录入第 %{position} 期
+      direction: 方向
+      direction_sell_high: 高卖（%{asset} → %{quote}）
+      direction_buy_low: 低买（%{quote} → %{asset}）
+      invested_amount: 投入数量
+      strike_price: 执行价
+      apy: 年化（%）
+      start_on: 起息日
+      expires_on: 到期日
+      notes: 备注
+      submit: 录入期次
+    create:
+      success: 期次已录入。
+    settle:
+      title: 结算第 %{position} 期
+      summary: 投入 %{invested} %{currency}，执行价 %{strike}，%{expires} 到期。
+      result: 交割结果
+      not_converted: 未交割——按原币 %{currency} 收回（含息）
+      converted: 已交割——按执行价转换为 %{currency}
+      received_amount: 实收数量（含息）
+      received_placeholder: 如 0.523
+      settled_on: 结算日期
+      submit: 保存结算
+    apply_settlement:
+      success: 结算已保存。

@@ -1,0 +1,136 @@
+<%# locals: (batches:) %>
+
+<% fmt_qty = ->(v) { v.to_d.round(8).to_s("F").sub(/\.?0+\z/, "") } %>
+
+<div class="space-y-4">
+  <% if batches.empty? %>
+    <div class="bg-container rounded-xl border border-alpha-black-25 shadow-border-xs p-8 text-center text-sm text-secondary">
+      <%= t(".empty") %>
+    </div>
+  <% else %>
+    <% batches.each do |batch| %>
+      <% spot = batch.current_spot %>
+      <% asset_qty, quote_qty = batch.holdings_including_pending %>
+      <% asset_ret = batch.asset_return_pct(spot) %>
+      <% quote_ret = batch.quote_return_pct(spot) %>
+      <% hodl = batch.vs_hodl_pct(spot) %>
+      <div class="bg-container rounded-xl border border-alpha-black-25 shadow-border-xs p-4 space-y-3 <%= "opacity-70" unless batch.active? %>">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-sm font-medium text-primary">
+            <%= batch.purpose == "accumulate" ? "🎯" : "💧" %>
+            <%= t(".purpose_#{batch.purpose}") %> · <%= batch.asset_symbol %>/<%= batch.quote_symbol %>
+          </span>
+          <span class="text-xs text-secondary"><%= batch.account.name %></span>
+          <span class="text-xs px-2 py-0.5 rounded-full <%= batch.active? ? "bg-surface-inset text-primary" : "bg-surface-inset text-secondary" %>">
+            <%= batch.active? ? t(".status_active", count: batch.rounds.size) : t(".status_closed") %>
+          </span>
+          <% if batch.overdue_rounds_count.positive? %>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-warning/10 text-warning font-medium">
+              <%= t(".overdue_rounds", count: batch.overdue_rounds_count) %>
+            </span>
+          <% end %>
+          <span class="ml-auto text-xs text-secondary">
+            <%= I18n.l(batch.started_on, format: :default) %> @ <%= fmt_qty.call(batch.start_spot_price) %>
+          </span>
+        </div>
+
+        <div class="flex flex-wrap gap-x-8 gap-y-1 text-sm">
+          <span class="text-secondary">
+            <%= t(".initial") %>:
+            <span class="text-primary privacy-sensitive"><%= fmt_qty.call(batch.initial_amount) %> <%= batch.initial_currency %></span>
+          </span>
+          <span class="text-secondary">
+            <%= t(".current") %>:
+            <span class="text-primary privacy-sensitive"><%= fmt_qty.call(asset_qty) %> <%= batch.asset_symbol %> + <%= fmt_qty.call(quote_qty) %> <%= batch.quote_symbol %></span>
+          </span>
+          <% if spot %>
+            <span class="text-secondary"><%= t(".spot") %>: <span class="text-primary privacy-sensitive"><%= fmt_qty.call(spot) %></span></span>
+          <% end %>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4 max-w-xl">
+          <% [
+            [ t(".asset_return", asset: batch.asset_symbol), asset_ret ],
+            [ t(".quote_return", quote: batch.quote_symbol), quote_ret ],
+            [ t(".vs_hodl"), hodl ],
+          ].each do |label, value| %>
+            <div>
+              <p class="text-xs uppercase text-secondary font-medium"><%= label %></p>
+              <p class="text-base font-medium mt-0.5 privacy-sensitive <%= value.nil? ? "text-secondary" : (value.negative? ? "text-destructive" : "text-success") %>">
+                <%= value ? number_to_percentage(value, precision: 2) : t(".no_spot") %>
+              </p>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="flex items-center gap-4 text-xs text-secondary">
+          <span><%= t(".conversions", count: batch.conversions_count) %></span>
+          <% if batch.pending_rounds_count.positive? %>
+            <span><%= t(".pending_rounds", count: batch.pending_rounds_count) %></span>
+          <% end %>
+          <% if batch.notes.present? %>
+            <span class="truncate max-w-64" title="<%= batch.notes %>"><%= batch.notes %></span>
+          <% end %>
+          <% if batch.active? %>
+            <span class="ml-auto">
+              <%= render DS::Link.new(text: t(".new_round"), icon: "plus", variant: "outline", size: "sm",
+                    href: new_derivative_round_path(batch_id: batch.id), frame: :modal) %>
+            </span>
+          <% end %>
+        </div>
+
+        <% if batch.rounds.any? %>
+          <details class="group">
+            <summary class="cursor-pointer text-xs text-secondary hover:text-primary select-none">
+              <%= t(".toggle_rounds", count: batch.rounds.size) %>
+            </summary>
+            <div class="overflow-x-auto mt-2">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="text-xs uppercase text-secondary border-b border-alpha-black-50">
+                    <th class="text-left font-medium px-3 py-2"><%= t(".col_position") %></th>
+                    <th class="text-left font-medium px-3 py-2"><%= t(".col_direction") %></th>
+                    <th class="text-right font-medium px-3 py-2"><%= t(".col_invested") %></th>
+                    <th class="text-right font-medium px-3 py-2"><%= t(".col_strike") %></th>
+                    <th class="text-right font-medium px-3 py-2"><%= t(".col_apy") %></th>
+                    <th class="text-right font-medium px-3 py-2"><%= t(".col_expires") %></th>
+                    <th class="text-left font-medium px-3 py-2"><%= t(".col_result") %></th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-alpha-black-50">
+                  <% batch.rounds.each do |round| %>
+                    <tr class="hover:bg-container-hover">
+                      <td class="px-3 py-2 text-secondary"><%= round.position %></td>
+                      <td class="px-3 py-2 whitespace-nowrap <%= round.direction == "sell_high" ? "text-destructive" : "text-success" %>">
+                        <%= t(".direction_#{round.direction}") %>
+                      </td>
+                      <td class="px-3 py-2 whitespace-nowrap text-right text-primary privacy-sensitive">
+                        <%= fmt_qty.call(round.invested_amount) %> <%= round.invested_currency %>
+                      </td>
+                      <td class="px-3 py-2 whitespace-nowrap text-right text-secondary"><%= fmt_qty.call(round.strike_price) %></td>
+                      <td class="px-3 py-2 whitespace-nowrap text-right text-secondary"><%= round.apy ? number_to_percentage(round.apy, precision: 1) : "—" %></td>
+                      <td class="px-3 py-2 whitespace-nowrap text-right text-secondary"><%= I18n.l(round.expires_on, format: :default) %></td>
+                      <td class="px-3 py-2 whitespace-nowrap">
+                        <% if round.settled? %>
+                          <span class="<%= round.converted? ? "text-warning" : "text-secondary" %>">
+                            <%= round.converted? ? t(".result_converted") : t(".result_kept") %>
+                            <span class="text-primary privacy-sensitive"><%= fmt_qty.call(round.received_amount) %> <%= round.received_currency %></span>
+                          </span>
+                        <% else %>
+                          <%= render DS::Link.new(
+                                text: round.expires_on < Date.current ? t(".settle_overdue") : t(".settle"),
+                                variant: "outline", size: "sm",
+                                href: settle_derivative_round_path(round), frame: :modal) %>
+                        <% end %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </details>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

@@ -265,6 +265,13 @@ Rails.application.routes.draw do
   resources :trade_logs, only: :index
   resource :trade_analysis, controller: :trade_analysis, only: :show
   resources :closed_positions, only: :update
+  resources :derivative_batches, only: %i[new create]
+  resources :derivative_rounds, only: %i[new create] do
+    member do
+      get :settle
+      patch :settle, action: :apply_settlement
+    end
+  end
 
   namespace :settings do
     resource :profile, only: [ :show, :destroy ]
